@@ -1,6 +1,4 @@
 from ext import globals, log
-from datetime import datetime
-from time import sleep
 
 def run(fileName, agents, environment=None):
     """
@@ -12,12 +10,7 @@ def run(fileName, agents, environment=None):
     globals.gIteration = 0
 
     print(fileName)
-    #while not globals.gEndGame:
-    if not globals.gEndGame:
-        # at each iteration
-        #if environment:
-        #    environment.upperFrame.displayRun()
-
+    while not globals.gEndGame:
         log.log(fileName, globals.gIteration, agents) # log data
         # calculateRandomSeeds()
         # decisionProcess()
@@ -26,6 +19,3 @@ def run(fileName, agents, environment=None):
 
         globals.gIteration += 1
         print(globals.gIteration)
-
-    sleep(10)
-    run(agents, environment)

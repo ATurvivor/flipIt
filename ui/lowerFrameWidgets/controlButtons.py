@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from Tkinter import *
+
 from endGame import *
-from run import *
+from datetime import datetime
 
 class controlButtons(Frame):
     """
@@ -32,36 +33,36 @@ class controlButtons(Frame):
         self.controlButtonsFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
 
     def start(self):
-        self.updateButton()
-        self.updateScore()
         self.updateBoard()
+        self.updateScore()
 
     def flip(self):
         if self.mode:
             self.root.agents[0].score += 1
             self.updateScore()
 
-    def updateButton(self):
+    def updateBoard(self):
         """
         Updates 'start' display and resets game if necessary
         :return:
         """
         self.mode = (self.mode + 1) % 2 # update mode
         if self.mode:
+            globals.gIteration = 0 # start iteration count
+
             # data log file name
             time = datetime.now()
             globals.gLogFileName = 'log/datalog_' + str(time.year) + str(time.month) + str(time.day) + '-' +\
                str(time.hour) + 'h' + str(time.minute) + 'm' + str(time.second) + 's' + str(time.microsecond) + 'us.txt'
 
-            # TODO : fix run display with environment
             self.root.upperFrame.running = True
             self.startButton.config(text="Reset")
-            self.after(50,self.root.upperFrame.displayRun())
+            self.after(100, self.run, globals.gLogFileName, self.root.agents, self.root)
 
-            run(globals.gLogFileName, self.root.agents, self.root)
         else:
             self.root.upperFrame.running = False
             self.startButton.config(text="Start")
+            # TODO : fix end critera : resetGame if finite, verifyEndGame if infinite
             resetGame(self.root.agents, self.root)
 
     def updateScore(self):
@@ -70,12 +71,26 @@ class controlButtons(Frame):
         :return:
         """
         self.parent.scoreFrame.updateDisplayScore()
-        #self.parent.scoreFrame.labelScoreP1.config(text="Player 1 : " + str(self.root.a1.score))
-        #self.parent.scoreFrame.labelScoreP2.config(text="Player 2 : " + str(self.root.a2.score))
 
-    def updateBoard(self):
+    def run(self, fileName, agents, environment=None):
         """
-        Updates board
+        Run game
+        :param fileName:
+        :param agents:
+        :param environment:
         :return:
         """
-        return 0
+        if not globals.gEndGame:
+            # at each iteration
+            if environment:
+                environment.upperFrame.displayRun()
+
+            log.log(fileName, globals.gIteration, agents) # log data
+            # calculateRandomSeeds()
+            # decisionProcess()
+            # update()
+            # verifyEndGame()
+
+            globals.gIteration += 1
+
+        self.after(100, self.run, fileName, agents, environment)

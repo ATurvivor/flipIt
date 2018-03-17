@@ -48,5 +48,3 @@ class upperFrame(Frame):
         if self.running:
             self.currentCoord+= 1
             self.boardFrame.create_line(self.currentCoord, 80, self.currentCoord, 120, width=1)
-
-        self.parent.after(50, self.displayRun)
