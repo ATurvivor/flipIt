@@ -1,21 +1,31 @@
-# -*- coding: utf-8 -*-
+from ext import globals, log
+from datetime import datetime
+from time import sleep
 
-import sys
-from os import getcwd
-sys.path.append(getcwd())
+def run(fileName, agents, environment=None):
+    """
+    Run game
+    :param agents: List of agents
+    :param environment: (optional) environment frame (example : mainWindow)
+    :return:
+    """
+    globals.gIteration = 0
 
-from Tkinter import *
-from ui.mainWindow import MainWindow
+    print(fileName)
+    #while not globals.gEndGame:
+    if not globals.gEndGame:
+        # at each iteration
+        #if environment:
+        #    environment.upperFrame.displayRun()
 
+        log.log(fileName, globals.gIteration, agents) # log data
+        # calculateRandomSeeds()
+        # decisionProcess()
+        # update()
+        # verifyEndGame()
 
-def launch():
-    root = Tk()
-    root.resizable(width=300, height=300)
+        globals.gIteration += 1
+        print(globals.gIteration)
 
-    main_window = MainWindow(root)
-    main_window.pack()
-
-    root.mainloop()
-
-if __name__ == '__main__':
-    launch()
+    sleep(10)
+    run(agents, environment)

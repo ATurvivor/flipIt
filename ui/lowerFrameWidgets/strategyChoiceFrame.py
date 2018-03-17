@@ -4,30 +4,33 @@ from Tkinter import *
 
 
 class strategyChoiceFrame(Frame):
-    def __init__(self, master):
+    def __init__(self, master, root):
         Frame.__init__(self, master, width=600, height=200)
+        self.root = root # mainWindow Frame
         self.parent = master
         self.strategyChoiceFrame = None
-        self.strategyP1 = IntVar() # 0 : random, 1 : adaptive
-        self.strategyP2 = IntVar()
+        #self.strategyP1 = IntVar() # 0 : random, 1 : adaptive
+        #self.strategyP2 = IntVar()
+        self.root.agents[0].strategy = IntVar()
+        self.root.agents[1].strategy = IntVar()
         self.strategyChoice()
 
     def strategyChoice(self):
         # Variable initialization
         self.strategyChoiceFrame = LabelFrame(self, text="Agents", padx=10, pady=10)
-        self.strategyP1.set(0)
-        self.strategyP2.set(0)
+        self.root.agents[0].strategy.set(0)
+        self.root.agents[1].strategy.set(0)
 
         # Widgets declaration
         labelStrategy = Label(self.strategyChoiceFrame, text="Choose strategies", font=("", 14))
         labelS1 = Label(self.strategyChoiceFrame, text="Player 1", font=("", 12))
         labelS2 = Label(self.strategyChoiceFrame, text="Player 2", font=("", 12))
 
-        radioRandom1 = Radiobutton(self.strategyChoiceFrame, text="Random", variable=self.strategyP1, value=0)
-        radioAdaptive1 = Radiobutton(self.strategyChoiceFrame, text="Adaptive", variable=self.strategyP1, value=1)
-        radioInteractive = Radiobutton(self.strategyChoiceFrame, text="Interactive", variable=self.strategyP1, value=2)
-        radioRandom2 = Radiobutton(self.strategyChoiceFrame, text="Random", variable=self.strategyP2, value=0)
-        radioAdaptive2 = Radiobutton(self.strategyChoiceFrame, text="Adaptive", variable=self.strategyP2, value=1)
+        radioRandom1 = Radiobutton(self.strategyChoiceFrame, text="Random", variable=self.root.agents[0].strategy, value=0)
+        radioAdaptive1 = Radiobutton(self.strategyChoiceFrame, text="Adaptive", variable=self.root.agents[0].strategy, value=1)
+        radioInteractive = Radiobutton(self.strategyChoiceFrame, text="Interactive", variable=self.root.agents[0].strategy, value=2)
+        radioRandom2 = Radiobutton(self.strategyChoiceFrame, text="Random", variable=self.root.agents[1].strategy, value=0)
+        radioAdaptive2 = Radiobutton(self.strategyChoiceFrame, text="Adaptive", variable=self.root.agents[1].strategy, value=1)
 
         # Widgets display
         labelStrategy.grid(row=0, column=0)

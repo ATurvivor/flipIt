@@ -4,8 +4,9 @@ from Tkinter import *
 
 
 class gameTypeFrame(Frame):
-    def __init__(self, master):
+    def __init__(self, master, root):
         Frame.__init__(self, master, width=600, height=200)
+        self.root = root # mainWindow frame
         self.parent = master
         self.gameTypeFrame = None
         self.type = IntVar() # 0 : finite, 1 : infinite

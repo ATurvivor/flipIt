@@ -3,13 +3,17 @@
 from Tkinter import *
 from ui.lowerFrame import lowerFrame
 from ui.upperFrame import upperFrame
+from agents.agent import Agent
 
 class MainWindow(Frame):
     """
     Frame containing all elements
     """
-    def __init__(self, master):
+    def __init__(self, master, agents):
         Frame.__init__(self, master)
+        #self.a1 = Agent('random')
+        #self.a2 = Agent('random')
+        self.agents = agents
         self.parent = master
         self.upperFrame = upperFrame(self)
         self.lowerFrame = lowerFrame(self)
@@ -46,3 +50,7 @@ class MainWindow(Frame):
             self.lowerFrame.destroy()
         self.lowerFrame = frame
         self.packLowerFrame()
+
+    def resetMainWindow(self):
+        self.lowerFrame.scoreFrame.updateDisplayScore()
+        self.upperFrame.resetBoard()

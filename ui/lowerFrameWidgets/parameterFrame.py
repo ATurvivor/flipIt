@@ -4,12 +4,13 @@ from Tkinter import *
 
 
 class parameterFrame(Frame):
-    def __init__(self, master):
+    def __init__(self, master, root):
         Frame.__init__(self, master, width=600, height=200)
+        self.root = root # mainWindow frame
         self.parent = master
         self.parameterFrame = None
-        self.cost = 0
-        self.reward = 0
+        self.cost = 0 # TODO : change to globals
+        self.reward = 0 # TODO : change to globals
         self.parameterChoice()
 
     def parameterChoice(self):
