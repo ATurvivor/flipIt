@@ -9,7 +9,7 @@ def verifyEndGame():
     """
     if (np.random.uniform(0,1) < globals.gEndGameProbability):
         #update()
-        #log()
+        #writeLog()
         resetGame()
 
 
@@ -20,7 +20,7 @@ def resetGame(agents, environment=None):
     :param environment : (optional) mainwindow frame
     :return:
     """
-    log.log(globals.gLogFileName, globals.gIteration, agents)
+    log.writeLog(globals.gLogFileName, globals.gIteration, agents)
 
     globals.gEndGame = True
 

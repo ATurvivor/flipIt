@@ -5,6 +5,7 @@ global gLogFileName
 global gLogData # boolean
 
 # Agents
+global gNbAgents
 global gAgentId
 
 # Game globals

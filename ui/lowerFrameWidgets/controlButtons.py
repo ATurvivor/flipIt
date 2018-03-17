@@ -13,6 +13,7 @@ class controlButtons(Frame):
         Frame.__init__(self, master)
         self.root = root
         self.parent = master
+        self._job = None
         self.mode = 0 # 0 : game over, 1 : game started
         self.controlButtonsFrame = None
         self.startButton = None
@@ -36,6 +37,11 @@ class controlButtons(Frame):
         self.updateBoard()
         self.updateScore()
 
+    def stop(self):
+        if self._job is not None:
+            self.after_cancel(self._job)
+            self._job = None
+
     def flip(self):
         if self.mode:
             self.root.agents[0].score += 1
@@ -43,7 +49,7 @@ class controlButtons(Frame):
 
     def updateBoard(self):
         """
-        Updates 'start' display and resets game if necessary
+        Start or end game
         :return:
         """
         self.mode = (self.mode + 1) % 2 # update mode
@@ -52,18 +58,21 @@ class controlButtons(Frame):
 
             # data log file name
             time = datetime.now()
-            globals.gLogFileName = 'log/datalog_' + str(time.year) + str(time.month) + str(time.day) + '-' +\
+            globals.gLogFileName = 'logs/datalog_' + str(time.year) + str(time.month) + str(time.day) + '-' +\
                str(time.hour) + 'h' + str(time.minute) + 'm' + str(time.second) + 's' + str(time.microsecond) + 'us.txt'
 
+            globals.gEndGame = False
             self.root.upperFrame.running = True
             self.startButton.config(text="Reset")
-            self.after(100, self.run, globals.gLogFileName, self.root.agents, self.root)
+            self._job = self.after(500, self.run, globals.gLogFileName, self.root.agents, self.root)
 
         else:
             self.root.upperFrame.running = False
             self.startButton.config(text="Start")
+            self.stop()
             # TODO : fix end critera : resetGame if finite, verifyEndGame if infinite
             resetGame(self.root.agents, self.root)
+
 
     def updateScore(self):
         """
@@ -85,12 +94,13 @@ class controlButtons(Frame):
             if environment:
                 environment.upperFrame.displayRun()
 
-            log.log(fileName, globals.gIteration, agents) # log data
+            log.writeLog(fileName, globals.gIteration, agents) # log data
             # calculateRandomSeeds()
             # decisionProcess()
             # update()
             # verifyEndGame()
 
             globals.gIteration += 1
+            print(globals.gIteration)
 
-        self.after(100, self.run, fileName, agents, environment)
+        self._job = self.after(500, self.run, fileName, agents, environment)

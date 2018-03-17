@@ -2,7 +2,7 @@
 
 from Tkinter import *
 
-def log(fileName, it, agents):
+def writeLog(fileName, it, agents):
     """
     Logs data
     :param agents: List of agents
@@ -16,4 +16,4 @@ def log(fileName, it, agents):
     f.close()
 
 if __name__ == '__main__':
-    log()
+    writeLog()

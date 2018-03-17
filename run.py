@@ -11,11 +11,14 @@ def run(fileName, agents, environment=None):
 
     print(fileName)
     while not globals.gEndGame:
-        log.log(fileName, globals.gIteration, agents) # log data
+        log.writeLog(fileName, globals.gIteration, agents) # log data
         # calculateRandomSeeds()
         # decisionProcess()
-        # update()
+        # updateScores()
         # verifyEndGame()
 
         globals.gIteration += 1
         print(globals.gIteration)
+
+def calculateRandomSeeds():
+    nbAgents = globals.gNbAgents

@@ -9,4 +9,11 @@ class Agent():
         self.strategy = strategy # 0 : random, 1 : adaptive, etc...
 
     def flip(self):
+        """
+        Flip action
+        :return:
+        """
+        self.updateScore()
+
+    def updateScore(self):
         return 0

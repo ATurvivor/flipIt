@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from Tkinter import *
+from ext import globals
 
 class upperFrame(Frame):
     """
@@ -10,7 +11,6 @@ class upperFrame(Frame):
         Frame.__init__(self, master, width=800)
         self.parent = master
         self.boardFrame = None
-        self.currentCoord = 10 # TODO : change to current time
         self.running = False
         self.addWidgets()
 
@@ -44,7 +44,6 @@ class upperFrame(Frame):
         Runs game
         :return:
         """
-        # TODO : fix display
         if self.running:
-            self.currentCoord+= 1
-            self.boardFrame.create_line(self.currentCoord, 80, self.currentCoord, 120, width=1)
+            self.boardFrame.create_line(globals.gIteration + 11, 80, globals.gIteration + 11, 120, width=1)
+            #self.boardFrame.create_line(self.currentCoord, 80, self.currentCoord, 120, width=1)
