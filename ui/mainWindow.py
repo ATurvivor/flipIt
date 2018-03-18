@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
 from Tkinter import *
 from ui.lowerFrame import lowerFrame
@@ -11,8 +11,6 @@ class MainWindow(Frame):
     """
     def __init__(self, master, agents):
         Frame.__init__(self, master)
-        #self.a1 = Agent('random')
-        #self.a2 = Agent('random')
         self.agents = agents
         self.parent = master
         self.upperFrame = upperFrame(self)

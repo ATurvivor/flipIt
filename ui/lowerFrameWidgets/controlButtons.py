@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
 from Tkinter import *
 
@@ -64,7 +64,7 @@ class controlButtons(Frame):
             globals.gEndGame = False
             self.root.upperFrame.running = True
             self.startButton.config(text="Reset")
-            self._job = self.after(500, self.run, globals.gLogFileName, self.root.agents, self.root)
+            self._job = self.after(500, self.run, self.root.agents, self.root)
 
         else:
             self.root.upperFrame.running = False
@@ -81,10 +81,9 @@ class controlButtons(Frame):
         """
         self.parent.scoreFrame.updateDisplayScore()
 
-    def run(self, fileName, agents, environment=None):
+    def run(self, agents, environment=None):
         """
         Run game
-        :param fileName:
         :param agents:
         :param environment:
         :return:
@@ -94,8 +93,8 @@ class controlButtons(Frame):
             if environment:
                 environment.upperFrame.displayRun()
 
-            log.writeLog(fileName, globals.gIteration, agents) # log data
-            # calculateRandomSeeds()
+            log.writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
+            # generateRandomSeeds()
             # decisionProcess()
             # update()
             # verifyEndGame()
@@ -103,4 +102,4 @@ class controlButtons(Frame):
             globals.gIteration += 1
             print(globals.gIteration)
 
-        self._job = self.after(500, self.run, fileName, agents, environment)
+        self._job = self.after(500, self.run, agents, environment)

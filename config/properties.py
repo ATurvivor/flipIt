@@ -1,12 +1,12 @@
-from ext import globals
+#!/usr/bin/env python
 
-fileName = 'test.properties'
+from ext import globals
 
 def readProperties(propertiesFile):
     """
-    Reads config
-    :param propertiesFile: property file name
-    :return: dictionary containing config and their values
+    Reads properties file
+    :param propertiesFile: properties file name
+    :return: dictionary containing all properties and their corresponding values
     """
     f = open(propertiesFile, 'r')
     file = f.readlines()
@@ -14,7 +14,8 @@ def readProperties(propertiesFile):
     properties = {}
 
     for line in file:
-        if '=' in line:
+        line = line.split(' #')[0]
+        if '=' in line and line[0] != '#':
             sp = line.split(' = ')
             properties[sp[0]] = sp[1]
     f.close()
@@ -23,24 +24,32 @@ def readProperties(propertiesFile):
 def setProperties(properties):
     """
     Sets config to global variables
-    :param globalsFile:
-    :param properties:
+    :param globalsFile: file containing global variables
+    :param properties: properties dictionary
     :return:
     """
+    globals.gIteration = 0
 
-    # Data
+    globals.gLogFileName = None
     globals.gLogData = eval(properties['gLogData'])
 
-    # Agents
+    globals.gDebug = eval(properties['gDebug'])
+
+    globals.gNbAgents = eval(properties['gNbAgents'])
     globals.gAgentId = eval(properties['gAgentId'])
+    globals.gFlipCost = eval(properties['gFlipCost'])
+    globals.gFlipReward = eval(properties['gFlipReward'])
+    globals.gRandomSeeds = {}
 
     # Game globals
     globals.gEnvironment = eval(properties['gEnvironment'])
     globals.gCurrentTime = eval(properties['gCurrentTime'])
     globals.gEndGameProbability = eval(properties['gEndGameProbability'])
     globals.gEndGame = eval(properties['gEndGame'])
+    #globals.gCurrentOwner = eval(properties['gCurrentOwner'])
 
 if __name__ == '__main__':
+    fileName = 'test.properties'
     prop = readProperties(fileName)
     setProperties(prop)
     print(globals.gLogData)

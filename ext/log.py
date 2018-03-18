@@ -1,6 +1,15 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
-from Tkinter import *
+import globals
+
+
+def logHeader(fileName):
+    """
+    Log file header
+    :param fileName:
+    :return:
+    """
+    return 0
 
 def writeLog(fileName, it, agents):
     """
@@ -8,10 +17,15 @@ def writeLog(fileName, it, agents):
     :param agents: List of agents
     :return:
     """
-    f = open(fileName, 'w+')
+
+    f = open(fileName, 'a')
 
     # TODO : complete log
-    f.write(str(it) + ',' + str(agents[0].score) + ',' + str(agents[1].score) + '\n')
+    log = str(it) + ',' + str(agents[0].score) + ',' + str(agents[1].score)
+    f.write(log + '\n')
+
+    if globals.gDebug:
+        print('Log : ' + log)
 
     f.close()
 
