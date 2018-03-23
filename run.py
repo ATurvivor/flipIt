@@ -12,7 +12,7 @@ def run(agents, environment=None):
     :param environment: (optional) environment frame (example : mainWindow)
     :return:
     """
-    # TODO check if environment is needed
+    # TODO check if variable environment is needed
     if globals.gDebug:
         print('Writing log in ' + str(globals.gLogFileName) + '\n')
 
@@ -48,9 +48,8 @@ def decisionProcess(agents):
     if globals.gDebug:
         print('Agents flip decisions : ' + str(flipped.values()))
 
-    # if all agents flipped, do nothing (cancels out) TODO : check with Louis
-    if any(flipped.values()) and not all(flipped.values()):
-        # if one or more agents flipped
+    if any(flipped.values()):
+        # if one or more agents flipped, pick random
         flippedAgents = [agent for agent in flipped.keys() if flipped[agent]]
         updateScores(flippedAgents)
         updateCurrentOwner(flippedAgents)

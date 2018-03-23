@@ -5,6 +5,8 @@ from Tkinter import *
 from endGame import *
 from datetime import datetime
 
+from run import generateRandomSeeds, decisionProcess
+
 class controlButtons(Frame):
     """
     Start and Flip buttons
@@ -34,6 +36,7 @@ class controlButtons(Frame):
         self.controlButtonsFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
 
     def start(self):
+        # self.updateButtonStates() # TODO complete function
         self.updateBoard()
         self.updateScore()
 
@@ -46,6 +49,11 @@ class controlButtons(Frame):
         if self.mode:
             self.root.agents[0].score += 1
             self.updateScore()
+
+    #def updateButtonStates(self):
+        #if self.root.agents[0].strategy == 0:
+            #self.sta
+        #if self.parent.gameTypeFrame.type == 0: # finite
 
     def updateBoard(self):
         """
@@ -61,10 +69,14 @@ class controlButtons(Frame):
             globals.gLogFileName = 'logs/datalog_' + str(time.year) + str(time.month) + str(time.day) + '-' +\
                str(time.hour) + 'h' + str(time.minute) + 'm' + str(time.second) + 's' + str(time.microsecond) + 'us.txt'
 
+            if globals.gDebug:
+                print('Writing log in ' + str(globals.gLogFileName) + '\n')
+
             globals.gEndGame = False
+
             self.root.upperFrame.running = True
             self.startButton.config(text="Reset")
-            self._job = self.after(500, self.run, self.root.agents, self.root)
+            self._job = self.after(500, self.run, self.root.agents)
 
         else:
             self.root.upperFrame.running = False
@@ -81,7 +93,7 @@ class controlButtons(Frame):
         """
         self.parent.scoreFrame.updateDisplayScore()
 
-    def run(self, agents, environment=None):
+    def run(self, agents):
         """
         Run game
         :param agents:
@@ -90,16 +102,17 @@ class controlButtons(Frame):
         """
         if not globals.gEndGame:
             # at each iteration
-            if environment:
-                environment.upperFrame.displayRun()
+            if globals.gDebug:
+                print('\nCurrent iteration : ' + str(globals.gIteration))
+
+            self.root.upperFrame.displayRun()
 
             log.writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
-            # generateRandomSeeds()
-            # decisionProcess()
+            generateRandomSeeds(agents)
+            decisionProcess(agents)
             # update()
-            # verifyEndGame()
+            # verifyEndGame(agents)
 
             globals.gIteration += 1
-            print(globals.gIteration)
 
-        self._job = self.after(500, self.run, agents, environment)
+        self._job = self.after(500, self.run, agents)

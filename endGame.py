@@ -3,7 +3,7 @@
 import numpy as np
 from ext import globals, log
 
-def verifyEndGame(agents):
+def verifyEndGame(agents, environment=None):
     """
     Verifies if we reached end of game
     :param agents: List of agents
@@ -14,7 +14,7 @@ def verifyEndGame(agents):
         if globals.gDebug:
             print('\nGame ended.')
         log.writeLog(globals.gLogFileName, globals.gIteration, agents)
-        resetGame(agents)
+        resetGame(agents, environment)
 
 def resetGame(agents, environment=None):
     """

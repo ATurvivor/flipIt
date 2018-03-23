@@ -19,10 +19,10 @@ class Agent:
         Runs agent's strategy and updates its score
         :return:
         """
-        # TODO : strategies
+        # TODO : strategies (choose strategy)
         if np.random.uniform(0,1) < globals.gRandomSeeds[self.id]:
             self.flip = True
-        self.updateTimeVector()
+        #self.updateTimeVector()
         return self.flip
 
     def flipPenalty(self):
@@ -35,6 +35,14 @@ class Agent:
         if globals.gDebug:
              print('Agent ' + str(self.id) + ' flipped. Adding penalty. New score is ' + str(self.score) + '.')
 
+    def setStrategy(self, strategy):
+        """
+
+        :param strategy:
+        :return:
+        """
+        return 0
+
     def updateScore(self):
         """
         Update score of previous owner of resource
@@ -46,4 +54,8 @@ class Agent:
 
     def updateTimeVector(self):
         # TODO update time vectors
+        return 0
+
+    def updateHistory(self):
+        # TODO update own time vectors, perspective time vectors
         return 0
