@@ -2,6 +2,7 @@
 
 from ext import globals
 
+
 def readProperties(propertiesFile):
     """
     Reads properties file
@@ -9,11 +10,11 @@ def readProperties(propertiesFile):
     :return: dictionary containing all properties and their corresponding values
     """
     f = open(propertiesFile, 'r')
-    file = f.readlines()
+    data = f.readlines()
 
     properties = {}
 
-    for line in file:
+    for line in data:
         line = line.split(' #')[0]
         if '=' in line and line[0] != '#':
             sp = line.split(' = ')
@@ -30,13 +31,13 @@ def setProperties(properties):
     """
     globals.gIteration = 0
 
-    globals.gLogFileName = None
+    globals.gLogFileName = eval(properties['gLogFileName'])
     globals.gLogData = eval(properties['gLogData'])
 
     globals.gDebug = eval(properties['gDebug'])
 
     globals.gNbAgents = eval(properties['gNbAgents'])
-    globals.gAgentId = eval(properties['gAgentId'])
+    globals.gAgentStartId = eval(properties['gAgentStartId'])
     globals.gFlipCost = eval(properties['gFlipCost'])
     globals.gFlipReward = eval(properties['gFlipReward'])
     globals.gRandomSeeds = {}
@@ -46,10 +47,7 @@ def setProperties(properties):
     globals.gCurrentTime = eval(properties['gCurrentTime'])
     globals.gEndGameProbability = eval(properties['gEndGameProbability'])
     globals.gEndGame = eval(properties['gEndGame'])
-    #globals.gCurrentOwner = eval(properties['gCurrentOwner'])
+    globals.gCurrentOwner = eval(properties['gCurrentOwner'])
 
-if __name__ == '__main__':
-    fileName = 'test.properties'
-    prop = readProperties(fileName)
-    setProperties(prop)
-    print(globals.gLogData)
+    globals.gGameType = eval(properties['gGameType'])
+    globals.gTime = eval(properties['gTime'])

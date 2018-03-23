@@ -9,8 +9,8 @@ class strategyChoiceFrame(Frame):
         self.root = root # mainWindow Frame
         self.parent = master
         self.strategyChoiceFrame = None
-        self.root.agents[0].strategy = IntVar()
-        self.root.agents[1].strategy = IntVar()
+        self.root.agents[0].strategy = IntVar() # modify ?
+        self.root.agents[1].strategy = IntVar() # modify ?
         self.strategyChoice()
 
     def strategyChoice(self):

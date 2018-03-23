@@ -5,8 +5,8 @@ import numpy as np
 
 class Agent:
     def __init__(self, strategy=0):
-        self.id = globals.gAgentId
-        globals.gAgentId += 1
+        self.id = globals.gAgentStartId
+        globals.gAgentStartId += 1
         self.score = 0
         self.cost = globals.gFlipCost
         self.reward = globals.gFlipReward

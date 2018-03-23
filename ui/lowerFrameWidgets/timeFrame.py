@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from Tkinter import *
+from ext import globals
 
 
 class timeFrame(Frame):
@@ -8,17 +9,17 @@ class timeFrame(Frame):
         Frame.__init__(self, master, width=600, height=200)
         self.root = root # mainWindow frame
         self.parent = master
-        self.time = IntVar()
         self.timeVariableFrame = None
+        self.time = IntVar()
         self.timeVariableChoice()
 
     def timeVariableChoice(self):
         # Variable initialization
         self.timeVariableFrame = LabelFrame(self, text="Time Variable", padx=10, pady=10)
+        self.time.set(globals.gTime)
 
         # Widgets declaration
         labelTime = Label(self.timeVariableFrame, text="Choose type", font=("", 14))
-
         radioDiscrete = Radiobutton(self.timeVariableFrame, text="Discrete", variable=self.time, value=0)
         radioContinuous = Radiobutton(self.timeVariableFrame, text="Continuous", variable=self.time, value=1)
 

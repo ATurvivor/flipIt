@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from Tkinter import *
+from ext import globals
 
 
 class gameTypeFrame(Frame):
@@ -9,14 +10,14 @@ class gameTypeFrame(Frame):
         self.root = root # mainWindow frame
         self.parent = master
         self.gameTypeFrame = None
-        self.type = IntVar() # 0 : finite, 1 : infinite
-        self.probability = StringVar()
+        self.type = IntVar()
+        self.probability = StringVar() # TODO complete
         self.gameTypeChoice()
 
     def gameTypeChoice(self):
         # Variable initialization
         self.gameTypeFrame = LabelFrame(self, text="Game Type", padx=10, pady=10)
-        self.type.set(0)
+        self.type.set(globals.gGameType)
 
         # Widgets declaration
         labelGame = Label(self.gameTypeFrame, text="Choose game type", font=("", 14))

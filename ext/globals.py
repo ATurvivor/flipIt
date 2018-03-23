@@ -10,7 +10,7 @@ global gDebug
 
 # Agents
 global gNbAgents
-global gAgentId
+global gAgentStartId
 global gFlipCost
 global gFlipReward
 global gRandomSeeds
@@ -21,3 +21,5 @@ global gCurrentTime
 global gEndGameProbability # [0,1]
 global gEndGame # boolean
 global gCurrentOwner
+global gGameType
+global gTime

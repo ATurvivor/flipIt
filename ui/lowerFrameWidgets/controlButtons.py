@@ -15,9 +15,9 @@ class controlButtons(Frame):
         Frame.__init__(self, master)
         self.root = root
         self.parent = master
-        self._job = None
-        self.mode = 0 # 0 : game over, 1 : game started
         self.controlButtonsFrame = None
+        self.mode = 0 # 0 : game over, 1 : game started
+        self._job = None
         self.startButton = None
         self.displayButtons()
 
@@ -114,5 +114,7 @@ class controlButtons(Frame):
             # verifyEndGame(agents)
 
             globals.gIteration += 1
+
+            print(self.parent.parameterFrame.entryReward.get(), self.parent.parameterFrame.entryCost.get())
 
         self._job = self.after(500, self.run, agents)
