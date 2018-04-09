@@ -21,10 +21,9 @@ def run(agents, environment=None):
             print('\nCurrent iteration : ' + str(globals.gIteration))
         log.writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
         generateRandomSeeds(agents)
-        decisionProcess(agents)
-        verifyEndGame(agents)
-
-        globals.gIteration += 1
+        endgame = decisionProcess(agents)
+        if (endgame):
+            verifyEndGame(agents)
 
 
 def generateRandomSeeds(agents):
@@ -33,27 +32,47 @@ def generateRandomSeeds(agents):
     :param agents: list of agents
     :return:
     """
-    globals.gRandomSeeds = {agent.id:np.random.uniform(0,0.05) for agent in agents}
+    globals.gRandomSeeds = {agent.id:np.random.uniform(0,1.0) for agent in agents}
 
 def decisionProcess(agents):
     """
     Flip for each agent
     :param agents: list of agents
-    :return:
+    :return: boolean, whether game ends
     """
-    flipped = {}
-    for agent in agents:
-        flipped[agent] = agent.flipDecision()
+    flipped = {} #agents that flip or flip times for discrete/continuous respectively
+    if globals.gGameType == 'Continuous':
+        flipped=globals.gFlipped
+        if(globals.gIteration==0.0):
+            for agent in agents:#Initialize all agents flip times
+                flipped[agent]=agent.flipDecision()[1]
+        else:
+            flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipDecision()[1] + globals.gIteration
+            #Updates only previous owners flip time
+            #This method doesn't yet work for continuous collisions
+
+        globals.gFlipped=flipped
+        globals.gIteration = np.minimum(np.amin(flipped.values()),globals.gGameEnd)
+        flipval=globals.gIteration
+        print(np.amin(flipped))
+    elif globals.gGameType == 'Discrete':
+        for agent in agents:
+            flipped[agent]=agent.flipDecision()[0]
+        globals.gIteration += 1
+        flipval=True
 
     if globals.gDebug:
         print('Agents flip decisions : ' + str(flipped.values()))
 
+    if(globals.gIteration>=globals.gGameEnd):
+        return True
+
     if any(flipped.values()):
         # if one or more agents flipped, pick random
-        flippedAgents = [agent for agent in flipped.keys() if flipped[agent]]
+        flippedAgents = [agent for agent in flipped.keys() if flipped[agent]==flipval]
         updateScores(flippedAgents)
         updateCurrentOwner(flippedAgents)
-
+    return False
 
 def updateScores(agents):
     """
@@ -73,4 +92,9 @@ def updateCurrentOwner(agents):
     :param agents: list of agents
     :return:
     """
-    globals.gCurrentOwner = np.random.choice(agents)
+    agent_order=np.random.permutation(agents)
+    for agent in agent_order:
+        agent.updateHistory()
+
+    globals.gCurrentOwner = agent_order[-1]
+

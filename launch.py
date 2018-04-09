@@ -12,7 +12,7 @@ from run import *
 from agents.agent import *
 from config.properties import *
 from datetime import datetime
-
+from strategies import basics
 
 def launch():
     setProperties(readProperties('config/test.properties'))

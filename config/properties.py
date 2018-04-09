@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from ext import globals
-
+import numpy as np
 
 def readProperties(propertiesFile):
     """
@@ -29,7 +29,7 @@ def setProperties(properties):
     :param properties: properties dictionary
     :return:
     """
-    globals.gIteration = 0
+    globals.gIteration = 0.0
 
     globals.gLogFileName = eval(properties['gLogFileName'])
     globals.gLogData = eval(properties['gLogData'])
@@ -49,5 +49,12 @@ def setProperties(properties):
     globals.gEndGame = eval(properties['gEndGame'])
     globals.gCurrentOwner = eval(properties['gCurrentOwner'])
 
+
     globals.gGameType = eval(properties['gGameType'])
     globals.gTime = eval(properties['gTime'])
+    if(globals.gGameType=='Continuous'):
+        globals.gGameEnd = np.random.exponential(scale=1.0/globals.gEndGameProbability)
+    if(globals.gGameType=='Discrete'):
+        globals.gGameEnd = np.random.geometric(p=globals.gEndGameProbability)
+    globals.gGameFlips = [[] for _ in range(globals.gNbAgents)]
+    globals.gFlipped={}

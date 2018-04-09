@@ -9,12 +9,11 @@ def verifyEndGame(agents, environment=None):
     :param agents: List of agents
     :return:
     """
-    if (np.random.uniform(0,1) < globals.gEndGameProbability):
-        globals.gEndGame = True
-        if globals.gDebug:
-            print('\nGame ended.')
-        log.writeLog(globals.gLogFileName, globals.gIteration, agents)
-        resetGame(agents, environment)
+    globals.gEndGame = True
+    if globals.gDebug:
+        print('\nGame ended.')
+    log.writeLog(globals.gLogFileName, globals.gIteration, agents)
+    resetGame(agents, environment)
 
 def resetGame(agents, environment=None):
     """

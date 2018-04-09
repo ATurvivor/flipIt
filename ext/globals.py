@@ -23,3 +23,6 @@ global gEndGame # boolean
 global gCurrentOwner
 global gGameType
 global gTime
+global gGameFlips #Game history of player flips, first index agent id
+global gGameEnd #Time of game end
+global gFlipped #Stores next flip times, only used for continuous game type

@@ -2,17 +2,25 @@
 
 from ext import globals
 import numpy as np
+from strategies import basics
 
 class Agent:
-    def __init__(self, strategy=0):
+    def __init__(self, strategy=0,strategyParam=(.05)):
         self.id = globals.gAgentStartId
         globals.gAgentStartId += 1
         self.score = 0
         self.cost = globals.gFlipCost
         self.reward = globals.gFlipReward
-        self.strategy = strategy  # 0 : default random, 1 : adaptive, etc...
+        self.strategyParam=strategyParam
         self.flip = False
+        self.flipTime= 10.0
         self.lastFlipTime = 0
+        self.history=[]
+        # list history of flip times
+        self.perspectiveHistory =np.zeros(globals.gNbAgents) #history lengths from this players perspective
+        self.strategy=strategy #strategy
+
+
 
     def flipDecision(self):
         """
@@ -20,10 +28,7 @@ class Agent:
         :return:
         """
         # TODO : strategies (choose strategy)
-        if np.random.uniform(0,1) < globals.gRandomSeeds[self.id]:
-            self.flip = True
-        #self.updateTimeVector()
-        return self.flip
+        return basics.run_strategy(self)
 
     def flipPenalty(self):
         """
@@ -58,4 +63,7 @@ class Agent:
 
     def updateHistory(self):
         # TODO update own time vectors, perspective time vectors
+        globals.gGameFlips[self.id].append(globals.gIteration)
+        for i in range(globals.gNbAgents):
+            self.perspectiveHistory[i]=len(globals.gGameFlips[i])
         return 0

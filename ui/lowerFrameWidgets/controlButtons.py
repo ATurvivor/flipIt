@@ -109,11 +109,12 @@ class controlButtons(Frame):
 
             log.writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
             generateRandomSeeds(agents)
-            decisionProcess(agents)
+            endgame=decisionProcess(agents)
+            if (endgame):
+                verifyEndGame(agents)
             # update()
             # verifyEndGame(agents)
 
-            globals.gIteration += 1
 
             print(self.parent.parameterFrame.entryReward.get(), self.parent.parameterFrame.entryCost.get())
 
