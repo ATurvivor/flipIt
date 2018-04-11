@@ -88,6 +88,7 @@ def updateScores(agents):
 
 def updateCurrentOwner(agents):
     """
+
     Updates current owner of resource
     :param agents: list of agents
     :return:
