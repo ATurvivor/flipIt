@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import globals
+import config.globals
 
 
 def logHeader(fileName):
@@ -24,7 +24,7 @@ def writeLog(fileName, it, agents):
     log = str(it) + ',' + str(agents[0].score) + ',' + str(agents[1].score)
     f.write(log + '\n')
 
-    if globals.gDebug:
+    if config.globals.gDebug:
         print('Log : ' + log)
 
     f.close()

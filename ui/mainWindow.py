@@ -3,7 +3,6 @@
 from Tkinter import *
 from ui.lowerFrame import lowerFrame
 from ui.upperFrame import upperFrame
-from agents.agent import Agent
 
 class MainWindow(Frame):
     """

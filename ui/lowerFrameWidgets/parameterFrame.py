@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from Tkinter import *
-from ext import globals
+
+from config import globals
 
 
 class parameterFrame(Frame):

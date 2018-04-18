@@ -9,20 +9,24 @@ global gLogData # boolean
 global gDebug
 
 # Agents
-global gNbAgents
 global gAgentStartId
+global gNbAgents
 global gFlipCost
 global gFlipReward
 global gRandomSeeds
 
 # Game globals
 global gEnvironment
+global gCurrentOwner
+
 global gCurrentTime
+global gFiniteTime
+global gGameType
+global gLastIteration
+
 global gEndGameProbability # [0,1]
 global gEndGame # boolean
-global gCurrentOwner
-global gGameType
-global gTime
-global gGameFlips #Game history of player flips, first index agent id
+
 global gGameEnd #Time of game end
+global gGameFlips #Game history of player flips, first index agent id
 global gFlipped #Stores next flip times, only used for continuous game type

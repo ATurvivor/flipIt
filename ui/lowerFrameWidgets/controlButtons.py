@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 from Tkinter import *
-
-from endGame import *
 from datetime import datetime
 
+from endGame import *
 from run import generateRandomSeeds, decisionProcess
+
 
 class controlButtons(Frame):
     """
@@ -26,7 +26,7 @@ class controlButtons(Frame):
         self.controlButtonsFrame = LabelFrame(self, text="Control Buttons", padx=10, pady=10)
 
         # add start button
-        self.startButton = Button(self.controlButtonsFrame, text="Play", command=self.start, width=8)
+        self.startButton = Button(self.controlButtonsFrame, text="Play", command=self.play, width=8)
         self.startButton.grid(row=0, column=0, sticky=W)
 
         # add flip button
@@ -35,15 +35,42 @@ class controlButtons(Frame):
 
         self.controlButtonsFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
 
-    def start(self):
+    def play(self):
         # self.updateButtonStates() # TODO complete function
         self.updateBoard()
         self.updateScore()
 
+    def start(self):
+        globals.gIteration = 0 # start iteration count
+
+        # data log file name
+        time = datetime.now()
+        globals.gLogFileName = 'logs/datalog_' + str(time.year) + str(time.month) + str(time.day) + '-' + \
+                               str(time.hour) + 'h' + str(time.minute) + 'm' + str(time.second) + 's' + \
+                               str(time.microsecond) + 'us.txt'
+
+        if globals.gDebug:
+            print('Writing log in ' + str(globals.gLogFileName) + '\n')
+
+        globals.gEndGame = False
+
+        self.root.upperFrame.running = True
+        self.startButton.config(text="Stop")
+        self._job = self.after(500, self.run, self.root.agents)
+
     def stop(self):
+        self.root.upperFrame.running = False
+        self.startButton.config(text="Restart")
+
         if self._job is not None:
             self.after_cancel(self._job)
             self._job = None
+        endGame(self.root.agents)
+
+    def restart(self):
+        self.startButton.config(text="Start")
+        resetGame(self.root.agents)
+        self.root.resetMainWindow()
 
     def flip(self):
         if self.mode:
@@ -57,34 +84,14 @@ class controlButtons(Frame):
 
     def updateBoard(self):
         """
-        Start or end game
+        Start, stop or restart game
         :return:
         """
-        self.mode = (self.mode + 1) % 2 # update mode
-        if self.mode:
-            globals.gIteration = 0 # start iteration count
+        self.mode = (self.mode + 1) % 3 # update mode
 
-            # data log file name
-            time = datetime.now()
-            globals.gLogFileName = 'logs/datalog_' + str(time.year) + str(time.month) + str(time.day) + '-' +\
-               str(time.hour) + 'h' + str(time.minute) + 'm' + str(time.second) + 's' + str(time.microsecond) + 'us.txt'
-
-            if globals.gDebug:
-                print('Writing log in ' + str(globals.gLogFileName) + '\n')
-
-            globals.gEndGame = False
-
-            self.root.upperFrame.running = True
-            self.startButton.config(text="Reset")
-            self._job = self.after(500, self.run, self.root.agents)
-
-        else:
-            self.root.upperFrame.running = False
-            self.startButton.config(text="Start")
-            self.stop()
-            # TODO : fix end critera : resetGame if finite, verifyEndGame if infinite
-            resetGame(self.root.agents, self.root)
-
+        if self.mode == 1: self.start()
+        elif self.mode == 2: self.stop()
+        else: self.restart()
 
     def updateScore(self):
         """
@@ -109,13 +116,9 @@ class controlButtons(Frame):
 
             log.writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
             generateRandomSeeds(agents)
-            endgame=decisionProcess(agents)
-            if (endgame):
-                verifyEndGame(agents)
-            # update()
-            # verifyEndGame(agents)
-
-
-            print(self.parent.parameterFrame.entryReward.get(), self.parent.parameterFrame.entryCost.get())
+            self.updateScore()
+            if decisionProcess(agents):
+                self.updateBoard()
 
         self._job = self.after(500, self.run, agents)
+

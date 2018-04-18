@@ -1,34 +1,31 @@
 #!/usr/bin/env python
 
-from ext import globals
 import numpy as np
-from strategies import basics
+
+from strategies.basics import *
 
 class Agent:
-    def __init__(self, strategy=0,strategyParam=(.05)):
+    def __init__(self, strategy=0, strategyParam=(.05)):
         self.id = globals.gAgentStartId
         globals.gAgentStartId += 1
         self.score = 0
         self.cost = globals.gFlipCost
         self.reward = globals.gFlipReward
-        self.strategyParam=strategyParam
+        self.strategy = strategy # strategy
+        self.strategyParam = strategyParam
         self.flip = False
-        self.flipTime= 10.0
+        self.flipTime = 10.0
         self.lastFlipTime = 0
-        self.history=[]
+        self.history = []
         # list history of flip times
-        self.perspectiveHistory =np.zeros(globals.gNbAgents) #history lengths from this players perspective
-        self.strategy=strategy #strategy
-
-
+        self.perspectiveHistory = np.zeros(globals.gNbAgents) #history lengths from this players perspective
 
     def flipDecision(self):
         """
         Runs agent's strategy and updates its score
         :return:
         """
-        # TODO : strategies (choose strategy)
-        return basics.run_strategy(self)
+        return run_strategy(self)
 
     def flipPenalty(self):
         """

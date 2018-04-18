@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-from ext import globals
 import numpy as np
+from config import globals
+
 
 def readProperties(propertiesFile):
     """
@@ -36,25 +37,28 @@ def setProperties(properties):
 
     globals.gDebug = eval(properties['gDebug'])
 
-    globals.gNbAgents = eval(properties['gNbAgents'])
     globals.gAgentStartId = eval(properties['gAgentStartId'])
+    globals.gNbAgents = eval(properties['gNbAgents'])
     globals.gFlipCost = eval(properties['gFlipCost'])
     globals.gFlipReward = eval(properties['gFlipReward'])
     globals.gRandomSeeds = {}
 
     # Game globals
     globals.gEnvironment = eval(properties['gEnvironment'])
-    globals.gCurrentTime = eval(properties['gCurrentTime'])
-    globals.gEndGameProbability = eval(properties['gEndGameProbability'])
-    globals.gEndGame = eval(properties['gEndGame'])
     globals.gCurrentOwner = eval(properties['gCurrentOwner'])
 
-
+    globals.gCurrentTime = eval(properties['gCurrentTime'])
+    globals.gFiniteTime = eval(properties['gFiniteTime'])
     globals.gGameType = eval(properties['gGameType'])
-    globals.gTime = eval(properties['gTime'])
-    if(globals.gGameType=='Continuous'):
-        globals.gGameEnd = np.random.exponential(scale=1.0/globals.gEndGameProbability)
-    if(globals.gGameType=='Discrete'):
-        globals.gGameEnd = np.random.geometric(p=globals.gEndGameProbability)
+
+    globals.gLastIteration = eval(properties['gLastIteration'])
+    # if(globals.gGameType== 'Continuous'):
+    #     globals.gGameEnd = np.random.exponential(scale=1.0 / globals.gEndGameProbability)
+    # if(globals.gGameType== 'Discrete'):
+    #     globals.gGameEnd = np.random.geometric(p=globals.gEndGameProbability)
+
+    globals.gEndGameProbability = eval(properties['gEndGameProbability'])
+    globals.gEndGame = eval(properties['gEndGame'])
+
     globals.gGameFlips = [[] for _ in range(globals.gNbAgents)]
-    globals.gFlipped={}
+    globals.gFlipped = {}

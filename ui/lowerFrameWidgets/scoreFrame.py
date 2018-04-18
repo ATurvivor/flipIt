@@ -18,8 +18,10 @@ class scoreFrame(Frame):
         self.scoreFrame = LabelFrame(self, text="Current Score", padx=10, pady=10)
 
         # Widgets declaration
-        self.labelScoreP1 = Label(self.scoreFrame, text="Player 1 : " + str(self.root.agents[0].score), font=("", 12))
-        self.labelScoreP2 = Label(self.scoreFrame, text="Player 2 : " + str(self.root.agents[1].score), font=("", 12))
+        self.labelScoreP1 = Label(self.scoreFrame, text="Player 1 : " + str("{0:.2f}".format(self.root.agents[0].score)),\
+                                  width=15, anchor=W, font=("", 12))
+        self.labelScoreP2 = Label(self.scoreFrame, text="Player 2 : " + str("{0:.2f}".format(self.root.agents[1].score)),\
+                                  width=15, anchor=W, font=("", 12))
 
         # Widgets display
         self.labelScoreP1.grid(row=0, column=0, sticky=W)
@@ -28,5 +30,5 @@ class scoreFrame(Frame):
         self.scoreFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
 
     def updateDisplayScore(self):
-        self.labelScoreP1.config(text="Player 1 : " + str(self.root.agents[0].score))
-        self.labelScoreP2.config(text="Player 2 : " + str(self.root.agents[1].score))
+        self.labelScoreP1.config(text="Player 1 : " + str("{0:.2f}".format(self.root.agents[0].score)))
+        self.labelScoreP2.config(text="Player 2 : " + str("{0:.2f}".format(self.root.agents[1].score)))
