@@ -5,6 +5,7 @@ from datetime import datetime
 
 from endGame import *
 from run import generateRandomSeeds, decisionProcess
+from config.ext import *
 
 
 class controlButtons(Frame):
@@ -36,18 +37,21 @@ class controlButtons(Frame):
         self.controlButtonsFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
 
     def play(self):
+        """
+        Play game
+        :return:
+        """
         # self.updateButtonStates() # TODO complete function
+        initGame(self.parent)
         self.updateBoard()
         self.updateScore()
 
     def start(self):
+        """
+        Start game
+        :return:
+        """
         globals.gIteration = 0 # start iteration count
-
-        # data log file name
-        time = datetime.now()
-        globals.gLogFileName = 'logs/datalog_' + str(time.year) + str(time.month) + str(time.day) + '-' + \
-                               str(time.hour) + 'h' + str(time.minute) + 'm' + str(time.second) + 's' + \
-                               str(time.microsecond) + 'us.txt'
 
         if globals.gDebug:
             print('Writing log in ' + str(globals.gLogFileName) + '\n')
@@ -56,9 +60,13 @@ class controlButtons(Frame):
 
         self.root.upperFrame.running = True
         self.startButton.config(text="Stop")
-        self._job = self.after(500, self.run, self.root.agents)
+        self._job = self.after(200, self.run, self.root.agents)
 
     def stop(self):
+        """
+        Stop game
+        :return:
+        """
         self.root.upperFrame.running = False
         self.startButton.config(text="Restart")
 
@@ -68,11 +76,19 @@ class controlButtons(Frame):
         endGame(self.root.agents)
 
     def restart(self):
+        """
+        Restart game
+        :return:
+        """
         self.startButton.config(text="Start")
         resetGame(self.root.agents)
         self.root.resetMainWindow()
 
     def flip(self):
+        """
+        Flip
+        :return:
+        """
         if self.mode:
             self.root.agents[0].score += 1
             self.updateScore()
@@ -114,11 +130,11 @@ class controlButtons(Frame):
 
             self.root.upperFrame.displayRun()
 
-            log.writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
+            ext.writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
             generateRandomSeeds(agents)
             self.updateScore()
-            if decisionProcess(agents):
+            if decisionProcess(agents, self.parent):
                 self.updateBoard()
 
-        self._job = self.after(500, self.run, agents)
+        self._job = self.after(200, self.run, agents)
 

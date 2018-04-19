@@ -23,9 +23,9 @@ class timeFrame(Frame):
         # Widgets declaration
         labelTime = Label(self.timeVariableFrame, text="Choose type", font=("", 14))
         labelP = Label(self.timeVariableFrame, text="Probability : ", font=("", 12))
-        radioInfinite = Radiobutton(self.timeVariableFrame, text="Finite", variable=self.time, value=0)
-        radioFinite = Radiobutton(self.timeVariableFrame, text="Infinite", variable=self.time, value=1)
-        entryProbability = Entry(self.timeVariableFrame, textvariable=self.probability, width=10) # entryP.focus_set(), int(entryP.get())
+        radioInfinite = Radiobutton(self.timeVariableFrame, text="Infinite", variable=self.time, value=0)
+        radioFinite = Radiobutton(self.timeVariableFrame, text="Finite", variable=self.time, value=1)
+        entryProbability = Entry(self.timeVariableFrame, textvariable=self.probability, width=10)
 
         # Widgets display
         labelTime.grid(row=0, column=0)

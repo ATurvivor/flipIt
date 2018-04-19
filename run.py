@@ -3,6 +3,7 @@
 from endGame import *
 # globals and log imported from endGame
 import numpy as np
+from config.ext import *
 
 
 def run(agents, environment=None):
@@ -12,7 +13,10 @@ def run(agents, environment=None):
     :param environment: (optional) environment frame (example : mainWindow)
     :return:
     """
-    # TODO check if variable environment is needed
+    initGame() # initialise game parameters
+
+    if globals.gDebug:
+        print('Writing log in ' + str(globals.gLogFileName) + '\n')
 
     while not globals.gEndGame:
         if globals.gDebug:
@@ -21,7 +25,7 @@ def run(agents, environment=None):
         if environment:
             environment.root.upperFrame.displayRun()
 
-        log.writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
+        ext.writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
         generateRandomSeeds(agents)
         if decisionProcess(agents):
             endGame(agents)
@@ -36,17 +40,16 @@ def generateRandomSeeds(agents):
     """
     globals.gRandomSeeds = {agent.id:np.random.uniform(0, 1.0) for agent in agents}
 
-def decisionProcess(agents):
+def decisionProcess(agents, environment=None):
     """
     Flip for each agent
     :param agents: list of agents
     :return: boolean, whether game ends
     """
-    # TODO review with Louis
     flipped = {} # agents that flip or flip times for discrete/continuous respectively
-    if globals.gGameType == 0: # continuous
+    if (environment and environment.gameTypeFrame.type.get() == 0) or globals.gGameType == 0: # continuous
         flipped = globals.gFlipped
-        if globals.gIteration == 0.0:
+        if globals.gIteration == 0.0: # first iteration
             for agent in agents: #Initialize all agents flip times
                 flipped[agent] = agent.flipDecision()[1]
         else:
@@ -57,8 +60,9 @@ def decisionProcess(agents):
         globals.gFlipped=flipped
         globals.gIteration = np.minimum(np.amin(flipped.values()), globals.gGameEnd)
         flipval= globals.gIteration
-        print(np.amin(flipped))
-    elif globals.gGameType == 1: # discrete
+        #print(np.amin(flipped))
+
+    elif (environment and environment.gameTypeFrame.type.get() == 1) or globals.gGameType == 1: # discrete
         for agent in agents:
             flipped[agent]=agent.flipDecision()[0]
         globals.gIteration += 1
@@ -67,6 +71,7 @@ def decisionProcess(agents):
     if globals.gDebug:
         print('Agents flip decisions : ' + str(flipped.values()))
 
+    print(globals.gGameEnd)
     if globals.gIteration >= globals.gGameEnd:
         return True
 
