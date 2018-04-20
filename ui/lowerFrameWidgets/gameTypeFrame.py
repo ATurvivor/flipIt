@@ -20,13 +20,11 @@ class gameTypeFrame(Frame):
         self.type.set(globals.gGameType)
 
         # Widgets declaration
-        labelGame = Label(self.gameTypeFrame, text="Choose game type", font=("", 14))
         radioContinuous = Radiobutton(self.gameTypeFrame, text="Continuous", variable=self.type, value=0)
         radioDiscrete = Radiobutton(self.gameTypeFrame, text="Discrete", variable=self.type, value=1)
 
         # Widgets display
-        labelGame.grid(row=0, column=0, columnspan=2, sticky=W)
-        radioContinuous.grid(row=1, column=0, columnspan=2, sticky=W)
-        radioDiscrete.grid(row=2, column=0, columnspan=2, sticky=W)
+        radioContinuous.grid(row=0, column=0, columnspan=2, sticky=W)
+        radioDiscrete.grid(row=1, column=0, columnspan=2, sticky=W)
 
-        self.gameTypeFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
+        self.gameTypeFrame.pack(side=LEFT, fill=BOTH, expand=1, padx=5, pady=5)

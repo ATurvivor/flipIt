@@ -27,9 +27,9 @@ class lowerFrame(Frame):
         self.addWidgets()
 
     def addWidgets(self):
-        self.strategyChoiceFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
-        self.gameTypeFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
-        self.timeFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
-        self.parameterFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
-        self.scoreFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
-        self.controlButtonsFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
+        self.strategyChoiceFrame.grid(row=0, column=0, columnspan=2, sticky=W+E+S+N)
+        self.scoreFrame.grid(row=0, column=2, sticky=W+E+S+N)
+        self.controlButtonsFrame.grid(row=0, column=3, sticky=W+E+S+N)
+        self.gameTypeFrame.grid(row=1, column=0, sticky=W+E+S+N)
+        self.timeFrame.grid(row=1, column=1, sticky=W+E+S+N)
+        self.parameterFrame.grid(row=1, column=2, columnspan=2, sticky=W+E+S+N)

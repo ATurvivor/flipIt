@@ -33,4 +33,4 @@ class parameterFrame(Frame):
         labelReward.grid(row=1, column=0, sticky=W)
         self.entryReward.grid(row=1, column=1, sticky=W)
 
-        self.parameterFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
+        self.parameterFrame.pack(side=LEFT, fill=BOTH, expand=1, padx=5, pady=5)

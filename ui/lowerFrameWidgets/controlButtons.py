@@ -42,7 +42,7 @@ class controlButtons(Frame):
         Play game
         :return:
         """
-        # self.updateButtonStates() # TODO complete function
+        self.updateButtonStates()
         initGame(self.parent)
 
         self.updateBoard()
@@ -62,7 +62,7 @@ class controlButtons(Frame):
 
         self.root.upperFrame.running = True
         self.startButton.config(text="Stop")
-        self._job = self.after(1000, self.run, self.root.agents)
+        self._job = self.after(50, self.run, self.root.agents)
 
     def stop(self):
         """
@@ -93,12 +93,13 @@ class controlButtons(Frame):
         """
         self.root.agents[0].flip = True
         self.root.agents[0].flipTime = globals.gIteration # TODO fix continuous value
+        self.root.upperFrame.show()
 
     def updateButtonStates(self):
-        if self.root.agents[0].strategy != 3: # not interactive
-            self.flipButton.config(state="DISABLED")
+        if self.root.agents[0].strategy.get() != 3: # not interactive
+            self.flipButton.config(state="disabled")
         else:
-            self.flipButton.config(state="NORMAL")
+            self.flipButton.config(state="active")
 
     def updateBoard(self):
         """
@@ -139,6 +140,8 @@ class controlButtons(Frame):
             if decisionProcess(agents, self.parent):
                 self.updateScore()
                 self.updateBoard()
+        else:
+            self.root.upperFrame.show()
 
-        self._job = self.after(1000, self.run, agents)
+        self._job = self.after(50, self.run, agents)
 
