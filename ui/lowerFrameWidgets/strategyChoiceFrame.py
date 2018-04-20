@@ -9,8 +9,8 @@ class strategyChoiceFrame(Frame):
         self.root = root # mainWindow Frame
         self.parent = master
         self.strategyChoiceFrame = None
-        self.root.agents[0].strategy = IntVar() # modify ?
-        self.root.agents[1].strategy = IntVar() # modify ?
+        self.root.agents[0].strategy = IntVar()
+        self.root.agents[1].strategy = IntVar()
         self.strategyChoice()
 
     def strategyChoice(self):
@@ -24,20 +24,25 @@ class strategyChoiceFrame(Frame):
         labelS1 = Label(self.strategyChoiceFrame, text="Player 1", font=("", 12))
         labelS2 = Label(self.strategyChoiceFrame, text="Player 2", font=("", 12))
 
-        radioRandom1 = Radiobutton(self.strategyChoiceFrame, text="Random", variable=self.root.agents[0].strategy, value=0)
-        radioAdaptive1 = Radiobutton(self.strategyChoiceFrame, text="Adaptive", variable=self.root.agents[0].strategy, value=1)
-        radioInteractive = Radiobutton(self.strategyChoiceFrame, text="Interactive", variable=self.root.agents[0].strategy, value=2)
-        radioRandom2 = Radiobutton(self.strategyChoiceFrame, text="Random", variable=self.root.agents[1].strategy, value=0)
-        radioAdaptive2 = Radiobutton(self.strategyChoiceFrame, text="Adaptive", variable=self.root.agents[1].strategy, value=1)
+        radioRandomDec1 = Radiobutton(self.strategyChoiceFrame, text="Rand. Dec.", variable=self.root.agents[0].strategy, value=0)
+        radioPeriodic1 = Radiobutton(self.strategyChoiceFrame, text="Periodic", variable=self.root.agents[0].strategy, value=1)
+        radioDelRandomDec1 = Radiobutton(self.strategyChoiceFrame, text="Delayed RD", variable=self.root.agents[0].strategy, value=2)
+        radioInteractive = Radiobutton(self.strategyChoiceFrame, text="Interactive", variable=self.root.agents[0].strategy, value=3)
+        radioRandomDec2 = Radiobutton(self.strategyChoiceFrame, text="Rand. Dec.", variable=self.root.agents[1].strategy, value=0)
+        radioPeriodic2 = Radiobutton(self.strategyChoiceFrame, text="Periodic", variable=self.root.agents[1].strategy, value=1)
+        radioDelRandomDec2 = Radiobutton(self.strategyChoiceFrame, text="Delayed RD", variable=self.root.agents[1].strategy, value=2)
+
 
         # Widgets display
         labelStrategy.grid(row=0, column=0)
         labelS1.grid(row=1, column=0, columnspan=2, sticky=W)
         labelS2.grid(row=1, column=2, columnspan=2, sticky=W)
-        radioRandom1.grid(row=2, column=0, columnspan=2, sticky=W)
-        radioAdaptive1.grid(row=3, column=0, columnspan=2, sticky=W)
-        radioInteractive.grid(row=4, column=0, columnspan=2, sticky=W)
-        radioRandom2.grid(row=2, column=2, columnspan=2, sticky=W)
-        radioAdaptive2.grid(row=3, column=2, columnspan=2, sticky=W)
+        radioRandomDec1.grid(row=2, column=0, columnspan=2, sticky=W)
+        radioPeriodic1.grid(row=3, column=0, columnspan=2, sticky=W)
+        radioDelRandomDec1.grid(row=4, column=0, columnspan=2, sticky=W)
+        radioInteractive.grid(row=5, column=0, columnspan=2, sticky=W)
+        radioRandomDec2.grid(row=2, column=2, columnspan=2, sticky=W)
+        radioPeriodic2.grid(row=3, column=2, columnspan=2, sticky=W)
+        radioDelRandomDec2.grid(row=4, column=2, columnspan=2, sticky=W)
 
         self.strategyChoiceFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)

@@ -23,11 +23,18 @@ def initGame(environment=None):
     :return:
     """
     globals.gLogFileName = initLogFileName() # initialise log file name
-    if (environment and environment.timeFrame.time.get() == 1) or globals.gFiniteTime == 1: # finite
-        globals.gGameEnd = globals.gLastIteration
 
-    elif (environment and environment.timeFrame.time.get() == 0) or globals.gFiniteTime == 0: # infinite
-        if globals.gGameType == 0: # continuous
+    if environment:
+        if environment.timeFrame.time.get() == 1: # finite
+            globals.gGameEnd = globals.gLastIteration
+        elif globals.gGameType == 0: # infinite and continuous
+            globals.gGameEnd = np.random.exponential(scale=1.0 / float(environment.timeFrame.probability.get()))
+        else: # infinite and discrete
+            globals.gGameEnd = np.random.geometric(p=float(environment.timeFrame.probability.get()))
+    else:
+        if globals.gFiniteTime == 1: # finite
+            globals.gGameEnd = globals.gLastIteration
+        elif globals.gGameType == 0: # infinite and continuous
             globals.gGameEnd = np.random.exponential(scale=1.0 / globals.gEndGameProbability)
-        elif globals.gGameType == 1: # discrete
+        else: # infinite and discrete
             globals.gGameEnd = np.random.geometric(p=globals.gEndGameProbability)

@@ -17,9 +17,10 @@ class controlButtons(Frame):
         self.root = root
         self.parent = master
         self.controlButtonsFrame = None
-        self.mode = 0 # 0 : game over, 1 : game started
+        self.mode = 0 # 0 : game over, 1 : game started, 2 : game stopped
         self._job = None
         self.startButton = None
+        self.flipButton = None
         self.displayButtons()
 
     def displayButtons(self):
@@ -31,8 +32,8 @@ class controlButtons(Frame):
         self.startButton.grid(row=0, column=0, sticky=W)
 
         # add flip button
-        flipButton = Button(self.controlButtonsFrame, text="Flip", command=self.flip, width=8)
-        flipButton.grid(row=1, column=0, sticky=W)
+        self.flipButton = Button(self.controlButtonsFrame, text="Flip", command=self.flip, width=8)
+        self.flipButton.grid(row=1, column=0, sticky=W)
 
         self.controlButtonsFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
 
@@ -61,7 +62,7 @@ class controlButtons(Frame):
 
         self.root.upperFrame.running = True
         self.startButton.config(text="Stop")
-        self._job = self.after(200, self.run, self.root.agents)
+        self._job = self.after(1000, self.run, self.root.agents)
 
     def stop(self):
         """
@@ -90,14 +91,14 @@ class controlButtons(Frame):
         Flip
         :return:
         """
-        if self.mode:
-            self.root.agents[0].score += 1
-            self.updateScore()
+        self.root.agents[0].flip = True
+        self.root.agents[0].flipTime = globals.gIteration # TODO fix continuous value
 
-    #def updateButtonStates(self):
-        #if self.root.agents[0].strategy == 0:
-            #self.sta
-        #if self.parent.gameTypeFrame.type == 0: # finite
+    def updateButtonStates(self):
+        if self.root.agents[0].strategy != 3: # not interactive
+            self.flipButton.config(state="DISABLED")
+        else:
+            self.flipButton.config(state="NORMAL")
 
     def updateBoard(self):
         """
@@ -134,8 +135,10 @@ class controlButtons(Frame):
             writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
             generateRandomSeeds(agents)
             self.updateScore()
+
             if decisionProcess(agents, self.parent):
+                self.updateScore()
                 self.updateBoard()
 
-        self._job = self.after(200, self.run, agents)
+        self._job = self.after(1000, self.run, agents)
 

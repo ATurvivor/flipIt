@@ -56,6 +56,6 @@ def delayedRandomDecayed(agent, gameType):
     agent_history = [globals.gGameFlips[i][:agent.perspectiveHistory[i]] for i in globals.gNbAgents]
 
     if gameType == 0: # continuous
-        agent.flipTime = delay -1.0 / p * np.log(globals.gRandomSeeds[agent.id])
+        agent.flipTime = delay - 1.0 / p * np.log(globals.gRandomSeeds[agent.id])
     elif globals.gRandomSeeds[agent.id] < p and globals.gIteration - agent_history[agent.id][-1] > delay:
         agent.flip = True

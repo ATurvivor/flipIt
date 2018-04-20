@@ -50,13 +50,17 @@ def decisionProcess(agents, environment=None):
     if (environment and environment.gameTypeFrame.type.get() == 0) or (not environment and globals.gGameType == 0): # continuous
         flipped = globals.gFlipped
         if globals.gIteration == 0.0: # first iteration
-            for agent in agents: #Initialize all agents flip times
-                agent.flipDecision(0)
+            for agent in agents: # initialize all agents flip times
+                if agent.strategy != 3: # not human
+                    agent.flipDecision(0)
                 flipped[agent] = agent.flipTime
         else:
             # TODO modify
-            globals.gCurrentOwner.flipDecision(0)
-            flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipTime + globals.gIteration
+            if globals.gCurrentOwner.strategy != 3:
+                globals.gCurrentOwner.flipDecision(0)
+                flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipTime + globals.gIteration
+            else:
+                flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipTime # TODO verify
             #Updates only previous owners flip time
             #This method doesn't yet work for continuous collisions
 
@@ -67,13 +71,15 @@ def decisionProcess(agents, environment=None):
     elif (environment and environment.gameTypeFrame.type.get() == 1) or (not environment and globals.gGameType == 1): # discrete
         flipped = {} # agents that flip or flip times for discrete/continuous respectively
         for agent in agents:
-            agent.flipDecision(1)
+            if agent.strategy.get() != 3:
+                agent.flipDecision(1)
             flipped[agent] = agent.flip
         globals.gIteration += 1
         flipValue = True
 
     if globals.gDebug:
-        print('Agents flip decisions : ' + str(flipped.values()))
+        print('Agents flip decisions : ' + str(flipped))
+        print('Current owner : ' + str(globals.gCurrentOwner.id))
 
     if globals.gIteration >= globals.gGameEnd:
         return True
@@ -86,14 +92,14 @@ def decisionProcess(agents, environment=None):
 
     return False
 
-def updateScores(agents):
+def updateScores(fAgents):
     """
     Updates scores
-    :param agents: list of agents
+    :param fAgents: list of agents who flipped
     :return:
     """
     globals.gCurrentOwner.updateScore()
-    for agent in agents:
+    for agent in fAgents:
         agent.flipPenalty()
         agent.lastFlipTime = globals.gIteration
         agent.flip = False
