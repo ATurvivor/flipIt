@@ -42,8 +42,10 @@ class controlButtons(Frame):
         Play game
         :return:
         """
-        self.updateButtonStates()
-        initGame(self.parent)
+
+        if self.mode == 0:
+            self.updateButtonStates()
+            initGame(self.parent)
 
         self.updateBoard()
         self.updateScore()
@@ -75,7 +77,12 @@ class controlButtons(Frame):
         if self._job is not None:
             self.after_cancel(self._job)
             self._job = None
+
+        self.root.upperFrame.showFlips()
+        globals.gCurrentOwner.addReward()
+        self.updateScore()
         endGame(self.root.agents)
+
 
     def restart(self):
         """
@@ -92,12 +99,13 @@ class controlButtons(Frame):
         :return:
         """
         self.root.agents[0].flip = True
-        self.root.agents[0].flipTime = globals.gIteration # TODO fix continuous value
-        self.root.upperFrame.showFlips()
+        self.root.agents[0].flipTime = globals.gIteration  # TODO fix continuous value
+        self.root.upperFrame.addFlip(self.root.agents[0])  # flip
+        self.root.upperFrame.showFlips()  # show previous flips
         self.updateScore()
 
     def updateButtonStates(self):
-        if self.root.agents[0].strategy.get() != 3: # not interactive
+        if self.root.agents[0].strategy.get() != 3:  # not interactive
             self.flipButton.config(state="disabled")
         else:
             self.flipButton.config(state="active")
@@ -136,13 +144,12 @@ class controlButtons(Frame):
 
             writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
             generateRandomSeeds(agents)
-            #self.updateScore()
 
             if decisionProcess(agents, self.parent):
-                #self.updateScore()
                 self.updateBoard()
-        else:
-            self.root.upperFrame.showFlips()
+
+            if not globals.gInteractive:
+                self.updateScore()
 
         self._job = self.after(50, self.run, agents)
 

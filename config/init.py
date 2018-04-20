@@ -34,6 +34,8 @@ def initGame(environment=None):
 
         if environment.parent.agents[0].strategy.get() == 3: # interactive
             globals.gInteractive = True
+        else:
+            globals.gInteractive = False
     else:
         if globals.gFiniteTime == 1: # finite
             globals.gGameEnd = globals.gLastIteration

@@ -37,7 +37,7 @@ class Agent:
         if globals.gDebug:
             print('Agent ' + str(self.id) + ' flipped. Adding penalty. New score is ' + str(self.score) + '.')
 
-    def updateScore(self):
+    def addReward(self):
         """
         Update score of previous owner of resource
         :return:

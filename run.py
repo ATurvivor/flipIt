@@ -47,31 +47,29 @@ def decisionProcess(agents, environment=None):
     :param agents: list of agents
     :return: boolean, whether game ends
     """
-    if (environment and environment.gameTypeFrame.type.get() == 0) or (not environment and globals.gGameType == 0): # continuous
+    # continuous
+    if globals.gGameType == 0:
         flipped = globals.gFlipped
         if globals.gIteration == 0.0: # first iteration
             for agent in agents: # initialize all agents flip times
-                if agent.strategy != 3: # not human
-                    agent.flipDecision(0)
+                agent.flipDecision(0)
                 flipped[agent] = agent.flipTime
         else:
-            # TODO modify
-            if globals.gCurrentOwner.strategy != 3:
-                globals.gCurrentOwner.flipDecision(0)
-                flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipTime + globals.gIteration
-            else:
-                flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipTime # TODO verify
-            #Updates only previous owners flip time
-            #This method doesn't yet work for continuous collisions
+            # TODO fix collisions
+            # Updates only previous owners flip time
+            # This method doesn't yet work for continuous collisions
+            globals.gCurrentOwner.flipDecision(0)
+            flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipTime + globals.gIteration
 
         globals.gFlipped = flipped
         globals.gIteration = np.minimum(np.amin(flipped.values()), globals.gGameEnd)
         flipValue = globals.gIteration
 
-    elif (environment and environment.gameTypeFrame.type.get() == 1) or (not environment and globals.gGameType == 1): # discrete
+    # discrete
+    elif (environment and environment.gameTypeFrame.type.get() == 1) or (not environment and globals.gGameType == 1):
         flipped = {} # agents that flip or flip times for discrete/continuous respectively
         for agent in agents:
-            if agent.strategy.get() != 3:
+            if (globals.gInteractive and agent.id != 0) or not globals.gInteractive: # any agent that is not human
                 agent.flipDecision(1)
             flipped[agent] = agent.flip
         globals.gIteration += 1
@@ -81,9 +79,12 @@ def decisionProcess(agents, environment=None):
         print('Agents flip decisions : ' + str(flipped))
         print('Current owner : ' + str(globals.gCurrentOwner.id))
 
+    # check if end of game
     if globals.gIteration >= globals.gGameEnd:
+        globals.gCurrentOwner.addReward()
         return True
 
+    # choose next owner
     if any(flipped.values()):
         # if one or more agents flipped, pick random
         flippedAgents = [agent for agent in flipped.keys() if flipped[agent] == flipValue]
@@ -102,7 +103,7 @@ def updateScores(fAgents):
     :param fAgents: list of agents who flipped
     :return:
     """
-    globals.gCurrentOwner.updateScore()
+    globals.gCurrentOwner.addReward()
     for agent in fAgents:
         agent.flipPenalty()
         agent.lastFlipTime = globals.gIteration
@@ -110,7 +111,6 @@ def updateScores(fAgents):
 
 def updateCurrentOwner(agents):
     """
-
     Updates current owner of resource
     :param agents: list of agents
     :return:
