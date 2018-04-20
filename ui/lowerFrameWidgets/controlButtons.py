@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 from Tkinter import *
-from datetime import datetime
 
 from endGame import *
 from run import generateRandomSeeds, decisionProcess
-from config.ext import *
+from config.log import writeLog
+from config.init import initGame
 
 
 class controlButtons(Frame):
@@ -43,6 +43,7 @@ class controlButtons(Frame):
         """
         # self.updateButtonStates() # TODO complete function
         initGame(self.parent)
+
         self.updateBoard()
         self.updateScore()
 
@@ -130,7 +131,7 @@ class controlButtons(Frame):
 
             self.root.upperFrame.displayRun()
 
-            ext.writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
+            writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
             generateRandomSeeds(agents)
             self.updateScore()
             if decisionProcess(agents, self.parent):

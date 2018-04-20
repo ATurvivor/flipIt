@@ -16,16 +16,16 @@ class Agent:
         self.flip = False
         self.flipTime = 10.0
         self.lastFlipTime = 0
-        self.history = []
-        # list history of flip times
+        self.history = [] # list history of flip times
         self.perspectiveHistory = np.zeros(globals.gNbAgents) #history lengths from this players perspective
 
-    def flipDecision(self):
+    def flipDecision(self, gameType):
         """
         Runs agent's strategy and updates its score
+        :param gameType: continuous or discrete
         :return:
         """
-        return run_strategy(self)
+        return run_strategy(self, gameType)
 
     def flipPenalty(self):
         """
@@ -35,15 +35,7 @@ class Agent:
         self.score -= globals.gFlipCost
 
         if globals.gDebug:
-             print('Agent ' + str(self.id) + ' flipped. Adding penalty. New score is ' + str(self.score) + '.')
-
-    def setStrategy(self, strategy):
-        """
-
-        :param strategy:
-        :return:
-        """
-        return 0
+            print('Agent ' + str(self.id) + ' flipped. Adding penalty. New score is ' + str(self.score) + '.')
 
     def updateScore(self):
         """

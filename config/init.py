@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
 from datetime import datetime
-from config import globals
 import numpy as np
-
+import globals
 
 def initLogFileName():
     """
@@ -32,34 +31,3 @@ def initGame(environment=None):
             globals.gGameEnd = np.random.exponential(scale=1.0 / globals.gEndGameProbability)
         elif globals.gGameType == 1: # discrete
             globals.gGameEnd = np.random.geometric(p=globals.gEndGameProbability)
-
-# TODO : complete log
-
-def writeLogHeader(fileName):
-    """
-    Log file header
-    :param fileName:
-    :return:
-    """
-    return 0
-
-
-def writeLog(fileName, it, agents):
-    """
-    Logs data
-    :param agents: List of agents
-    :return:
-    """
-
-    f = open(fileName, 'a')
-
-    log = str(it) + ',' + str(agents[0].score) + ',' + str(agents[1].score)
-    f.write(log + '\n')
-
-    if globals.gDebug:
-        print('Log : ' + log)
-
-    f.close()
-
-if __name__ == '__main__':
-    writeLog()

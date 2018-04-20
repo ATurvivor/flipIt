@@ -3,7 +3,8 @@
 from endGame import *
 # globals and log imported from endGame
 import numpy as np
-from config.ext import *
+from config.log import writeLog
+from config.init import initGame
 
 
 def run(agents, environment=None):
@@ -25,7 +26,7 @@ def run(agents, environment=None):
         if environment:
             environment.root.upperFrame.displayRun()
 
-        ext.writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
+        writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
         generateRandomSeeds(agents)
         if decisionProcess(agents):
             endGame(agents)
@@ -46,38 +47,40 @@ def decisionProcess(agents, environment=None):
     :param agents: list of agents
     :return: boolean, whether game ends
     """
-    flipped = {} # agents that flip or flip times for discrete/continuous respectively
-    if (environment and environment.gameTypeFrame.type.get() == 0) or globals.gGameType == 0: # continuous
+    if (environment and environment.gameTypeFrame.type.get() == 0) or (not environment and globals.gGameType == 0): # continuous
         flipped = globals.gFlipped
         if globals.gIteration == 0.0: # first iteration
             for agent in agents: #Initialize all agents flip times
-                flipped[agent] = agent.flipDecision()[1]
+                agent.flipDecision(0)
+                flipped[agent] = agent.flipTime
         else:
-            flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipDecision()[1] + globals.gIteration
+            # TODO modify
+            globals.gCurrentOwner.flipDecision(0)
+            flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipTime + globals.gIteration
             #Updates only previous owners flip time
             #This method doesn't yet work for continuous collisions
 
-        globals.gFlipped=flipped
+        globals.gFlipped = flipped
         globals.gIteration = np.minimum(np.amin(flipped.values()), globals.gGameEnd)
-        flipval= globals.gIteration
-        #print(np.amin(flipped))
+        flipValue = globals.gIteration
 
-    elif (environment and environment.gameTypeFrame.type.get() == 1) or globals.gGameType == 1: # discrete
+    elif (environment and environment.gameTypeFrame.type.get() == 1) or (not environment and globals.gGameType == 1): # discrete
+        flipped = {} # agents that flip or flip times for discrete/continuous respectively
         for agent in agents:
-            flipped[agent]=agent.flipDecision()[0]
+            agent.flipDecision(1)
+            flipped[agent] = agent.flip
         globals.gIteration += 1
-        flipval = True
+        flipValue = True
 
     if globals.gDebug:
         print('Agents flip decisions : ' + str(flipped.values()))
 
-    print(globals.gGameEnd)
     if globals.gIteration >= globals.gGameEnd:
         return True
 
     if any(flipped.values()):
         # if one or more agents flipped, pick random
-        flippedAgents = [agent for agent in flipped.keys() if flipped[agent] == flipval]
+        flippedAgents = [agent for agent in flipped.keys() if flipped[agent] == flipValue]
         updateScores(flippedAgents)
         updateCurrentOwner(flippedAgents)
 

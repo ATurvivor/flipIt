@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from config import ext, globals
+from config import log, globals
 
 
 def endGame(agents):
@@ -12,7 +12,7 @@ def endGame(agents):
     globals.gEndGame = True
     if globals.gDebug:
         print('\nGame ended.')
-    ext.writeLog(globals.gLogFileName, globals.gIteration, agents)
+    log.writeLog(globals.gLogFileName, globals.gIteration, agents)
     #TODO add update score
 
 def resetGame(agents):
