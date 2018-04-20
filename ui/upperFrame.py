@@ -4,7 +4,7 @@ from Tkinter import *
 
 from config import globals
 
-boardColor = ['red3', 'midnight blue']
+boardColor = ['red3', 'medium blue']
 
 class upperFrame(Frame):
     """
@@ -44,19 +44,33 @@ class upperFrame(Frame):
         self.boardFrame.create_line(globals.gIteration + 11, 60 + globals.gCurrentOwner.id * 41,\
                                     globals.gIteration + 11, 99 + globals.gCurrentOwner.id * 43,\
                                     width=1, fill=boardColor[globals.gCurrentOwner.id])
-        self.boardFrame.create_line(globals.gIteration + 11, 60, globals.gIteration + 11, 142,\
-                                    width=1, tags='line{}'.format(self.it))
-        #self.boardFrame.create_oval(globals.gIteration-5, 50 + globals.gCurrentOwner.id * 152, globals.gIteration + 5,\
-                                    #60 + globals.gCurrentOwner.id * 152, fill=boardColor[globals.gCurrentOwner.id],\
-                                    #width=2, outline="black", tags='flips')
 
-    def show(self):
+        if globals.gInteractive: # add overlay
+            self.boardFrame.create_line(globals.gIteration + 11, 60, globals.gIteration + 11, 142,\
+                                        width=1, tags='line{}'.format(self.it))
+
+    def showFlips(self):
+        """
+        Show flips on board
+        :return:
+        """
         self.boardFrame.delete('line{}'.format(self.it))
-        self.boardFrame.create_oval(globals.gIteration + 11 - 5, 35, globals.gIteration + 11 + 5,\
-                                    45, fill=boardColor[0],\
-                                    width=2, outline="black", tags='flips')
+
+        self.addFlip(self.parent.agents[0])
+        self.boardFrame.itemconfig('flips', state=NORMAL)
+        self.it += 1
 
         # TODO add border at each flip
 
-        self.boardFrame.itemconfig('flips', state=NORMAL)
-        self.it += 1
+    def addFlip(self, agent):
+        """
+        Adds flip on board
+        :param agent:
+        :return:
+        """
+        if globals.gInteractive: display=HIDDEN
+        else: display=NORMAL
+
+        self.boardFrame.create_oval(globals.gIteration + 11 - 5, 35 + agent.id * (143 - 25), globals.gIteration + 11 + 5,\
+                                    45 + agent.id * (143 - 25), fill=boardColor[agent.id],\
+                                    width=2, outline="black", tags='flips', state=display)

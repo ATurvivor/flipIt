@@ -90,6 +90,10 @@ def decisionProcess(agents, environment=None):
         updateScores(flippedAgents)
         updateCurrentOwner(flippedAgents)
 
+        # add flip on board
+        if environment:
+            environment.parent.upperFrame.addFlip(globals.gCurrentOwner)
+
     return False
 
 def updateScores(fAgents):

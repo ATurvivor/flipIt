@@ -31,6 +31,9 @@ def initGame(environment=None):
             globals.gGameEnd = np.random.exponential(scale=1.0 / float(environment.timeFrame.probability.get()))
         else: # infinite and discrete
             globals.gGameEnd = np.random.geometric(p=float(environment.timeFrame.probability.get()))
+
+        if environment.parent.agents[0].strategy.get() == 3: # interactive
+            globals.gInteractive = True
     else:
         if globals.gFiniteTime == 1: # finite
             globals.gGameEnd = globals.gLastIteration

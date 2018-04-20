@@ -17,6 +17,7 @@ global gRandomSeeds
 
 # Game globals
 global gEnvironment
+global gInteractive
 global gCurrentOwner
 
 global gCurrentTime

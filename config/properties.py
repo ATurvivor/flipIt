@@ -45,20 +45,17 @@ def setProperties(properties):
 
     # Game globals
     globals.gEnvironment = eval(properties['gEnvironment'])
+    globals.gInteractive = eval(properties['gInteractive'])
     globals.gCurrentOwner = eval(properties['gCurrentOwner'])
 
     globals.gCurrentTime = eval(properties['gCurrentTime'])
     globals.gFiniteTime = eval(properties['gFiniteTime'])
     globals.gGameType = eval(properties['gGameType'])
 
-    globals.gLastIteration = eval(properties['gLastIteration'])
-    # if(globals.gGameType== 'Continuous'):
-    #     globals.gGameEnd = np.random.exponential(scale=1.0 / globals.gEndGameProbability)
-    # if(globals.gGameType== 'Discrete'):
-    #     globals.gGameEnd = np.random.geometric(p=globals.gEndGameProbability)
-
     globals.gEndGameProbability = eval(properties['gEndGameProbability'])
     globals.gEndGame = eval(properties['gEndGame'])
+
+    globals.gLastIteration = eval(properties['gLastIteration'])
 
     globals.gGameFlips = [[] for _ in range(globals.gNbAgents)]
     globals.gFlipped = {}

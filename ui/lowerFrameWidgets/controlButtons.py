@@ -93,7 +93,8 @@ class controlButtons(Frame):
         """
         self.root.agents[0].flip = True
         self.root.agents[0].flipTime = globals.gIteration # TODO fix continuous value
-        self.root.upperFrame.show()
+        self.root.upperFrame.showFlips()
+        self.updateScore()
 
     def updateButtonStates(self):
         if self.root.agents[0].strategy.get() != 3: # not interactive
@@ -135,13 +136,13 @@ class controlButtons(Frame):
 
             writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
             generateRandomSeeds(agents)
-            self.updateScore()
+            #self.updateScore()
 
             if decisionProcess(agents, self.parent):
-                self.updateScore()
+                #self.updateScore()
                 self.updateBoard()
         else:
-            self.root.upperFrame.show()
+            self.root.upperFrame.showFlips()
 
         self._job = self.after(50, self.run, agents)
 
