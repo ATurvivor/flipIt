@@ -5,7 +5,7 @@ import numpy as np
 from strategies.basics import *
 
 class Agent:
-    def __init__(self, strategy=0, strategyParam=(.05)):
+    def __init__(self, strategy=0, strategyParam=(.01)):
         self.id = globals.gAgentStartId
         globals.gAgentStartId += 1
         self.score = 0
@@ -16,7 +16,7 @@ class Agent:
         self.flip = False
         self.flipTime = 10.0
         self.lastFlipTime = 0
-        self.history = [] # list history of flip times
+        #self.history = [] # list history of flip times
         self.perspectiveHistory = np.zeros(globals.gNbAgents) #history lengths from this players perspective
 
     def flipDecision(self, gameType):
@@ -55,4 +55,3 @@ class Agent:
         globals.gGameFlips[self.id].append(globals.gIteration)
         for i in range(globals.gNbAgents):
             self.perspectiveHistory[i]=len(globals.gGameFlips[i])
-        return 0

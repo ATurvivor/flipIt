@@ -18,7 +18,7 @@ def launch():
     """
     setProperties(readProperties('config/test.properties'))
 
-    agents = [Agent() for _ in range(globals.gNbAgents)]
+    agents = [Agent(strategy=1) for _ in range(globals.gNbAgents)]
     globals.gCurrentOwner = agents[0]  # default
 
     if globals.gEnvironment:

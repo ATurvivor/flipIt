@@ -20,7 +20,10 @@ def writeLog(fileName, it, agents):
 
     f = open(fileName, 'a')
 
-    log = str(it) + ',' + str(agents[0].score) + ',' + str(agents[1].score)
+    agentsLog = ""
+    for ag in agents:
+        agentsLog += ',' + str(ag.score)
+    log = str(it) + agentsLog
     f.write(log + '\n')
 
     if globals.gDebug:

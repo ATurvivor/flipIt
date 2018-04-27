@@ -55,7 +55,7 @@ class controlButtons(Frame):
         Start game
         :return:
         """
-        globals.gIteration = 0 # start iteration count
+        globals.gIteration = 0.0 # start iteration count
 
         if globals.gDebug:
             print('Writing log in ' + str(globals.gLogFileName) + '\n')

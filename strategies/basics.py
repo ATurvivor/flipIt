@@ -38,11 +38,12 @@ def periodic(agent, gameType):
     :return: tuple of form (discrete response, continuous response)
     """
     per = 1.0 / agent.strategyParam
-    agent_history = [globals.gGameFlips[i][:agent.perspectiveHistory[i]] for i in globals.gNbAgents] # TODO modify range to agents
-
+    agent_history = [globals.gGameFlips[i][:int(agent.perspectiveHistory[i])] for i in range(globals.gNbAgents)]
+    print(agent_history)
     if gameType == 0: # continuous
         agent.flipTime = per
-    elif globals.gIteration-agent_history[agent.id][-1] > per: # discrete
+    elif (len(agent_history[agent.id]) > 0 and globals.gIteration - agent_history[agent.id][-1] > per) or\
+            (len(agent_history[agent.id]) == 0 and globals.gIteration > per): # discrete
         agent.flip = True
 
 
