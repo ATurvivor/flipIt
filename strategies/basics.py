@@ -11,7 +11,6 @@ def run_strategy(agent, gameType):
     :return:
     """
     strategies = {0 : randomDecayed, 1 : periodic, 2 : delayedRandomDecayed}
-
     if globals.gEnvironment:
         return strategies[agent.strategy.get()](agent, gameType)
     return strategies[agent.strategy](agent, gameType)
