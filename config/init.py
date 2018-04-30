@@ -23,6 +23,7 @@ def initGame(environment=None):
     :return:
     """
     globals.gLogFileName = initLogFileName() # initialise log file name
+    globals.gAgentStartId=0
 
     if environment:
         if environment.timeFrame.time.get() == 1: # finite

@@ -8,7 +8,7 @@ class Agent:
     def __init__(self, strategy=0, strategyParam=(.01)):
         self.id = globals.gAgentStartId
         globals.gAgentStartId += 1
-        self.score = 0
+        self.score = 0.0
         self.cost = globals.gFlipCost
         self.reward = globals.gFlipReward
         self.strategy = strategy # strategy
@@ -36,6 +36,8 @@ class Agent:
 
         if globals.gDebug:
             print('Agent ' + str(self.id) + ' flipped. Adding penalty. New score is ' + str(self.score) + '.')
+
+
 
     def addReward(self):
         """

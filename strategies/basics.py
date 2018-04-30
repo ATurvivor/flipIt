@@ -24,11 +24,19 @@ def randomDecayed(agent, gameType):
     :return: tuple of form (discrete response, continuous response)
     """
     p = agent.strategyParam
-
+    used_hist=np.zeros((globals.gNbAgents,1))
+    hist=1
+    agent_history = np.zeros((globals.gNbAgents, hist))
+    for ag in range(globals.gNbAgents):
+        for idx in range(np.minimum(int(agent.perspectiveHistory[ag]),hist)):
+            agent_history[ag,-idx-1]=globals.gGameFlips[ag][int(agent.perspectiveHistory[ag])-idx-1]
     if gameType == 0:
-        agent.flipTime = -1.0 / p * np.log(globals.gRandomSeeds[agent.id])
-    elif globals.gRandomSeeds[agent.id] < p:
+        agent.flipTime = np.random.exponential(scale=1.0/p)
+        print(agent.flipTime)
+    elif np.random.random() < p:
         agent.flip = True
+    else:
+        agent.flip = False
 
 
 def periodic(agent, gameType):
@@ -38,14 +46,17 @@ def periodic(agent, gameType):
     :return: tuple of form (discrete response, continuous response)
     """
     per = 1.0 / agent.strategyParam
-    agent_history = [globals.gGameFlips[i][:int(agent.perspectiveHistory[i])] for i in range(globals.gNbAgents)]
-    print(agent_history)
+    hist=1
+    agent_history = np.zeros((globals.gNbAgents, hist))
+    for ag in range(globals.gNbAgents):
+        for idx in range(np.minimum(int(agent.perspectiveHistory[ag]),hist)):
+            agent_history[ag,-idx-1]=globals.gGameFlips[ag][int(agent.perspectiveHistory[ag])-idx-1]
     if gameType == 0: # continuous
         agent.flipTime = per
-    elif (len(agent_history[agent.id]) > 0 and globals.gIteration - agent_history[agent.id][-1] > per) or\
-            (len(agent_history[agent.id]) == 0 and globals.gIteration > per): # discrete
+    elif globals.gIteration - agent_history[agent.id][0] >= per:
         agent.flip = True
-
+    else:
+        agent.flip = False
 
 def delayedRandomDecayed(agent, gameType):
     """
@@ -53,10 +64,21 @@ def delayedRandomDecayed(agent, gameType):
     :param agent: agent executing strategy
     :return: tuple of form (discrete response, continuous response)
     """
-    p, delay = agent.strategyParam
-    agent_history = [globals.gGameFlips[i][:agent.perspectiveHistory[i]] for i in globals.gNbAgents]
-
+    if(globals.gEnvironment):
+        p, delay = .01,.01
+    else:
+        p, delay = agent.strategyParam
+    delay=1.0/delay
+    hist=1
+    agent_history = np.zeros((globals.gNbAgents, hist))
+    for ag in range(globals.gNbAgents):
+        for idx in range(np.minimum(int(agent.perspectiveHistory[ag]),hist)):
+            agent_history[ag,-idx-1]=globals.gGameFlips[ag][int(agent.perspectiveHistory[ag])-idx-1]
     if gameType == 0: # continuous
-        agent.flipTime = delay - 1.0 / p * np.log(globals.gRandomSeeds[agent.id])
-    elif globals.gRandomSeeds[agent.id] < p and globals.gIteration - agent_history[agent.id][-1] > delay:
+        agent.flipTime = delay + np.random.exponential(scale=1.0/p)
+        print(agent.flipTime)
+    elif np.random.random() < p and globals.gIteration - agent_history[agent.id][0] >= delay:
         agent.flip = True
+    else:
+        agent.flip = False
+

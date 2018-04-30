@@ -56,6 +56,9 @@ def setProperties(properties):
     globals.gEndGame = eval(properties['gEndGame'])
 
     globals.gLastIteration = eval(properties['gLastIteration'])
+    globals.gGrid = eval(properties['gGrid'])
 
+
+    globals.gPrec = eval(properties['gPrec'])
     globals.gGameFlips = [[] for _ in range(globals.gNbAgents)]
     globals.gFlipped = {}

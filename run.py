@@ -52,14 +52,14 @@ def decisionProcess(agents, environment=None):
         flipped = globals.gFlipped
         if globals.gIteration == 0.0: # first iteration
             for agent in agents: # initialize all agents flip times
-                agent.flipDecision(0)
+                agent.flipDecision(gameType=0)
                 flipped[agent] = agent.flipTime
         else:
             # TODO fix collisions
             # Updates only previous owners flip time
             # This method doesn't yet work for continuous collisions
-            globals.gCurrentOwner.flipDecision(0)
-            flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipTime + globals.gIteration
+            globals.gCurrentOwner.flipDecision(gameType=0)
+            flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipTime + globals.gIteration+globals.gPrec*np.random.random()
 
         globals.gFlipped = flipped
         globals.gIteration = np.minimum(np.amin(flipped.values()), globals.gGameEnd)
