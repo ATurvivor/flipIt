@@ -1,7 +1,19 @@
 #!/usr/bin/env python
 from config import globals
+from datetime import datetime
 
 # TODO : complete log
+
+def initLogFileName():
+    """
+    Initialise log file name
+    :return:
+    """
+    time = datetime.now()
+    fname = 'logs/datalog_' + str(time.year) + str(time.month) + str(time.day) + '-' + \
+            str(time.hour) + 'h' + str(time.minute) + 'm' + str(time.second) + 's' + \
+            str(time.microsecond) + 'us.txt'
+    return fname
 
 def writeLogHeader(fileName):
     """

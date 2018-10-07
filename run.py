@@ -1,20 +1,35 @@
 #!/usr/bin/env python
 
 from endGame import *
-# globals and log imported from endGame
+from config.log import initLogFileName, writeLog
+
 import numpy as np
-from config.log import writeLog
-from config.init import initGame
 
 
-def run(agents, environment=None):
+def initParameters():
+    """
+    Initialises game parameters
+    :param environment:
+    :return:
+    """
+    globals.gLogFileName = initLogFileName() # initialise log file name
+    globals.gAgentStartId = 0
+
+    if globals.gFiniteTime == 1: # finite
+        globals.gGameEnd = globals.gLastIteration
+    elif globals.gGameType == 0: # infinite and continuous
+        globals.gGameEnd = np.random.exponential(scale=1.0 / globals.gEndGameProbability)
+    else: # infinite and discrete
+        globals.gGameEnd = np.random.geometric(p=globals.gEndGameProbability)
+
+def run_simulation(agents):
     """
     Run game
     :param agents: list of agents
     :param environment: (optional) environment frame (example : mainWindow)
     :return:
     """
-    initGame() # initialise game parameters
+    initParameters() # initialise game parameters
 
     if globals.gDebug:
         print('Writing log in ' + str(globals.gLogFileName) + '\n')
@@ -23,15 +38,36 @@ def run(agents, environment=None):
         if globals.gDebug:
             print('\nCurrent iteration : ' + str(globals.gIteration))
 
-        if environment:
-            environment.root.upperFrame.displayRun()
-
         writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
         generateRandomSeeds(agents)
+
         if decisionProcess(agents):
             endGame(agents)
             resetGame(agents)
 
+def run_environment(env, agents):
+    """
+
+    :param agents:
+    :param env:
+    :return:
+    """
+    if not globals.gEndGame:
+        if globals.gDebug:
+            print('\nCurrent iteration : ' + str(globals.gIteration))
+
+        env.root.upperFrame.displayRun()
+
+        writeLog(globals.gLogFileName, globals.gIteration, agents) # log data
+        generateRandomSeeds(agents)
+
+        if decisionProcess(agents, env):
+            env.updateBoard()
+
+        if not globals.gInteractive:
+            env.updateScore()
+
+    env._job = env.after(50, env.run, agents)
 
 def generateRandomSeeds(agents):
     """
@@ -41,7 +77,7 @@ def generateRandomSeeds(agents):
     """
     globals.gRandomSeeds = {agent.id:np.random.uniform(0, 1.0) for agent in agents}
 
-def decisionProcess(agents, environment=None):
+def decisionProcess(agents, env=None):
     """
     Flip for each agent
     :param agents: list of agents
@@ -66,7 +102,7 @@ def decisionProcess(agents, environment=None):
         flipValue = globals.gIteration
 
     # discrete
-    elif (environment and environment.gameTypeFrame.type.get() == 1) or (not environment and globals.gGameType == 1):
+    elif (env and env.getGameType()) or (not env and globals.gGameType):
         flipped = {} # agents that flip or flip times for discrete/continuous respectively
         for agent in agents:
             if (globals.gInteractive and agent.id != 0) or not globals.gInteractive: # any agent that is not human
@@ -90,10 +126,15 @@ def decisionProcess(agents, environment=None):
         flippedAgents = [agent for agent in flipped.keys() if flipped[agent] == flipValue]
         updateScores(flippedAgents)
         updateCurrentOwner(flippedAgents)
+        print('New owner : ' + str(globals.gCurrentOwner.id))
 
         # add flip on board
-        if environment:
-            environment.parent.upperFrame.addFlip(globals.gCurrentOwner)
+        if env:
+            if globals.gCurrentOwner.id != 0 or (globals.gCurrentOwner.id == 0 and globals.gCurrentOwner.strategy.get() != 3):
+                env.root.upperFrame.addFlip(globals.gCurrentOwner)
+            if globals.gCurrentOwner.id == 0 and globals.gInteractive:
+                env.updateScore()
+
 
     return False
 
@@ -105,7 +146,7 @@ def updateScores(fAgents):
     """
     globals.gCurrentOwner.addReward()
     for agent in fAgents:
-        agent.flipPenalty()
+        agent.addPenalty()
         agent.lastFlipTime = globals.gIteration
         agent.flip = False
 

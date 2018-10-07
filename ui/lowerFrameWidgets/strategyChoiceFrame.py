@@ -31,7 +31,6 @@ class strategyChoiceFrame(Frame):
         radioPeriodic2 = Radiobutton(self.strategyChoiceFrame, text="Periodic", variable=self.root.agents[1].strategy, value=1)
         radioDelRandomDec2 = Radiobutton(self.strategyChoiceFrame, text="Delayed Random Decayed", variable=self.root.agents[1].strategy, value=2)
 
-
         # Widgets display
         labelS1.grid(row=0, column=0, columnspan=2, sticky=W)
         labelS2.grid(row=0, column=2, columnspan=2, sticky=W)

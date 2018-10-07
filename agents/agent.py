@@ -7,7 +7,6 @@ from strategies.basics import *
 class Agent:
     def __init__(self, strategy=0, strategyParam=(.01)):
         self.id = globals.gAgentStartId
-        globals.gAgentStartId += 1
         self.score = 0.0
         self.cost = globals.gFlipCost
         self.reward = globals.gFlipReward
@@ -18,6 +17,10 @@ class Agent:
         self.lastFlipTime = 0
         #self.history = [] # list history of flip times
         self.perspectiveHistory = np.zeros(globals.gNbAgents) #history lengths from this players perspective
+        self.updateAgentIds()
+
+    def updateAgentIds(self):
+        globals.gAgentStartId += 1
 
     def flipDecision(self, gameType):
         """
@@ -25,28 +28,31 @@ class Agent:
         :param gameType: continuous or discrete
         :return:
         """
-        return run_strategy(self, gameType)
+        strategies = {0 : randomDecayed, 1 : periodic, 2 : delayedRandomDecayed}
+        if globals.gEnvironment:
+            return strategies[self.strategy.get()](self, gameType)
+        return strategies[self.strategy](self, gameType)
+        #return run_strategy(self, gameType)
 
-    def flipPenalty(self):
+    def addPenalty(self):
         """
         Add flip cost
         :return:
         """
-        self.score -= globals.gFlipCost
+        self.score -= self.cost
 
         if globals.gDebug:
             print('Agent ' + str(self.id) + ' flipped. Adding penalty. New score is ' + str(self.score) + '.')
-
-
 
     def addReward(self):
         """
         Update score of previous owner of resource
         :return:
         """
-        self.score += (globals.gIteration - self.lastFlipTime) * globals.gFlipReward
+        self.score += (globals.gIteration - self.lastFlipTime) * self.reward
+
         if globals.gDebug:
-            print('Agent ' + str(self.id) + ' has new score ' + str(self.score) + '.')
+            print('Agent ' + str(self.id) + ' has score ' + str(self.score) + ' after reward.')
 
     def updateTimeVector(self):
         # TODO update time vectors

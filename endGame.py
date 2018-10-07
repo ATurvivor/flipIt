@@ -26,7 +26,7 @@ def resetGame(agents):
         print('Resetting game.')
 
     for ag in agents:
-        #ag.score = 0
+        ag.score = 0
         ag.flip = False
         ag.lastFlipTime = 0
 

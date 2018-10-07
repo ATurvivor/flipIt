@@ -23,6 +23,8 @@ def launch():
         root = Tk()
         root.resizable(width=300, height=300)
 
+        agents = [Agent(strategy=1) for _ in range(globals.gNbAgents)]
+        globals.gCurrentOwner = agents[0]  # default
         main_window = MainWindow(root, agents)
         main_window.pack()
 
@@ -41,14 +43,14 @@ def launch():
                     j=agent_params[jj]
                     agent_pair=[Agent(strategy=i[0],strategyParam=i[1]),Agent(strategy=j[0],strategyParam=j[1])]
                     globals.gCurrentOwner = agent_pair[0]
-                    run(agent_pair)
+                    run_simulation(agent_pair)
                     ij_score+=agent_pair[0].score/(2.0*globals.gLastIteration)
                     ji_score += agent_pair[1].score/(2.0*globals.gLastIteration)
                     setProperties(readProperties('config/test.properties'))
                     globals.gAgentStartId=0
                     agent_pair=[Agent(strategy=j[0],strategyParam=j[1]),Agent(strategy=i[0],strategyParam=i[1])]
                     globals.gCurrentOwner = agent_pair[0]
-                    run(agent_pair)
+                    run_simulation(agent_pair)
                     ij_score+=agent_pair[1].score/(2.0*globals.gLastIteration)
                     ji_score += agent_pair[0].score/(2.0*globals.gLastIteration)
                     setProperties(readProperties('config/test.properties'))
@@ -63,7 +65,7 @@ def launch():
             agents = [Agent(strategy=agent_params[idx][0], strategyParam=agent_params[idx][1]) for idx in
                       range(globals.gNbAgents)]
             globals.gCurrentOwner = agents[0]
-            run(agents)
+            run_simulation(agents)
             print(agents[1].score)
 if __name__ == '__main__':
     launch()

@@ -33,3 +33,4 @@ class lowerFrame(Frame):
         self.gameTypeFrame.grid(row=1, column=0, sticky=W+E+S+N)
         self.timeFrame.grid(row=1, column=1, sticky=W+E+S+N)
         self.parameterFrame.grid(row=1, column=2, columnspan=2, sticky=W+E+S+N)
+
