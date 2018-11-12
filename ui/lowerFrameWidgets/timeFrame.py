@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 
-from Tkinter import *
-
+from tkinter import *
 from config import globals
 
 
 class timeFrame(Frame):
-    def __init__(self, master, root):
+    def __init__(self, master):
         Frame.__init__(self, master, width=600, height=200)
-        self.root = root # mainWindow frame
         self.parent = master
         self.timeVariableFrame = None
         self.time = IntVar()
@@ -34,6 +32,3 @@ class timeFrame(Frame):
         radioFinite.grid(row=2, column=0, columnspan=2, sticky=W)
 
         self.timeVariableFrame.pack(side=LEFT, fill=BOTH, expand=1, padx=5, pady=5)
-
-    def getTimeType(self):
-        return self.time

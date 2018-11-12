@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import numpy as np
-
 from strategies.basics import *
 
+
 class Agent:
-    def __init__(self, strategy=0, strategyParam=(.01)):
+    def __init__(self, strategy=0, strategyParam=(.01), type=None):
         self.id = globals.gAgentStartId
+        self.type = type # None, LM (last move) or FH (full history)
         self.score = 0.0
         self.cost = globals.gFlipCost
         self.reward = globals.gFlipReward
@@ -15,24 +15,22 @@ class Agent:
         self.flip = False
         self.flipTime = 10.0
         self.lastFlipTime = 0
-        #self.history = [] # list history of flip times
-        self.perspectiveHistory = np.zeros(globals.gNbAgents) #history lengths from this players perspective
+        self.history = {idx : [] for idx in range(globals.gNbAgents)} # list history of flip times
         self.updateAgentIds()
 
     def updateAgentIds(self):
         globals.gAgentStartId += 1
 
-    def flipDecision(self, gameType):
+    def flipDecision(self, continuous):
         """
         Runs agent's strategy and updates its score
-        :param gameType: continuous or discrete
+        :param continuous: continuous or discrete
         :return:
         """
         strategies = {0 : randomDecayed, 1 : periodic, 2 : delayedRandomDecayed}
         if globals.gEnvironment:
-            return strategies[self.strategy.get()](self, gameType)
-        return strategies[self.strategy](self, gameType)
-        #return run_strategy(self, gameType)
+            return strategies[self.strategy.get()](self, continuous)
+        return strategies[self.strategy](self, continuous)
 
     def addPenalty(self):
         """
@@ -40,6 +38,8 @@ class Agent:
         :return:
         """
         self.score -= self.cost
+        self.lastFlipTime = globals.gIteration
+        self.flip = False
 
         if globals.gDebug:
             print('Agent ' + str(self.id) + ' flipped. Adding penalty. New score is ' + str(self.score) + '.')
@@ -54,12 +54,14 @@ class Agent:
         if globals.gDebug:
             print('Agent ' + str(self.id) + ' has score ' + str(self.score) + ' after reward.')
 
-    def updateTimeVector(self):
-        # TODO update time vectors
-        return 0
-
     def updateHistory(self):
-        # TODO update own time vectors, perspective time vectors
+        """
+        Update agent's perspective depending on type (LM, FH)
+        :return:
+        """
         globals.gGameFlips[self.id].append(globals.gIteration)
-        for i in range(globals.gNbAgents):
-            self.perspectiveHistory[i]=len(globals.gGameFlips[i])
+        for idx in range(globals.gNbAgents):
+            if self.type == 'LM': # last move
+                self.history[idx].append(globals.gGameFlips[idx][-1])
+            elif self.type == 'FH': # full history
+                self.history[idx] = globals.gGameFlips[idx]

@@ -1,33 +1,32 @@
 #!/usr/bin/env python
 
-from Tkinter import *
+from tkinter import *
+
 
 from endGame import *
-from run import run_environment
 from config.log import initLogFileName, writeLog
 
 import numpy as np
 
+
 class controlButtons(Frame):
-    """
-    Start and Flip buttons
-    """
-    def __init__(self, master, root):
+    def __init__(self, main, master, agents):
         Frame.__init__(self, master)
-        self.root = root
+        self.main = main
         self.parent = master
+        self.agents = agents
         self.controlButtonsFrame = None
-        self.mode = 0 # 0 : game over, 1 : game started, 2 : game stopped
-        self._job = None
+        self.mode = 0 # 0 : game restarted, 1 : game started, 2 : game stopped
         self.startButton = None
         self.flipButton = None
+        self._job = None
         self.displayButtons()
 
     def displayButtons(self):
         # Variable initialization
         self.controlButtonsFrame = LabelFrame(self, text="Control Buttons", padx=10, pady=10)
 
-        # add start button
+        # add play button
         self.startButton = Button(self.controlButtonsFrame, text="Play", command=self.play, width=8)
         self.startButton.grid(row=0, column=0, sticky=W)
 
@@ -37,98 +36,7 @@ class controlButtons(Frame):
 
         self.controlButtonsFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
 
-    def initParameters(self):
-        globals.gLogFileName = initLogFileName() # initialise log file name
-        globals.gIteration = 0.0 # start iteration count
-        globals.gEndGame = False
-
-        for ag in self.root.agents:
-            ag.cost = self.getCost()
-            ag.reward = self.getReward()
-
-        if self.getTimeType(): # finite
-            globals.gGameEnd = globals.gLastIteration
-        elif self.getGameType() == 0: # infinite and continuous
-            globals.gGameEnd = np.random.exponential(scale=1.0 / self.getTimeType()[1])
-        else: # infinite and discrete
-            globals.gGameEnd = np.random.geometric(p=self.getTimeType()[1])
-
-        if self.getAgent0().strategy.get() == 3: # interactive
-            globals.gInteractive = True
-        else:
-            globals.gInteractive = False
-
-    def updateButtonStates(self):
-        if globals.gInteractive:  # interactive
-            self.flipButton.config(state="active")
-        else:
-            self.flipButton.config(state="disabled")
-
-    def play(self):
-        """
-        Play game button
-        :return:
-        """
-        self.initParameters()
-        if self.mode == 0:
-            self.updateButtonStates()
-
-        self.updateBoard()
-        self.updateScore()
-
-    def start(self):
-        """
-        Start game button
-        :return:
-        """
-        self.initParameters()
-
-        if globals.gDebug:
-            print('Writing log in ' + str(globals.gLogFileName) + '\n')
-
-        self.root.upperFrame.running = True
-        self.startButton.config(text="Stop")
-        self._job = self.after(50, self.run, self.root.agents)
-
-    def stop(self):
-        """
-        Stop game button
-        :return:
-        """
-        self.root.upperFrame.running = False
-        self.startButton.config(text="Restart")
-
-        if self._job is not None:
-            self.after_cancel(self._job)
-            self._job = None
-
-        globals.gCurrentOwner.addReward()
-        self.root.upperFrame.showFlips()
-        self.updateScore()
-        endGame(self.root.agents)
-
-
-    def restart(self):
-        """
-        Restart game button
-        :return:
-        """
-        self.startButton.config(text="Start")
-        resetGame(self.root.agents)
-        self.root.resetMainWindow()
-
-    def flip(self):
-        """
-        Flip button
-        :return:
-        """
-        self.getAgent0().flip = True
-        self.getAgent0().flipTime = globals.gIteration  # TODO fix continuous value
-        self.root.upperFrame.addFlip(self.getAgent0())  # flip
-        self.root.upperFrame.showFlips()  # show previous flips
-        self.updateScore()
-
-    def updateBoard(self):
+    def updateMode(self):
         """
         Start, stop or restart game
         :return:
@@ -139,33 +47,185 @@ class controlButtons(Frame):
         elif self.mode == 2: self.stop()
         else: self.restart()
 
-    def updateScore(self):
+    def updateParameters(self):
+        """
+
+        :return:
+        """
+        globals.gLogFileName = initLogFileName() # initialise log file name
+        globals.gIteration = 0.0 # start iteration count
+        globals.gEndGame = False
+        globals.gCurrentOwner = self.agents[globals.gCurrentOwnerId]
+
+        for agent in self.agents:
+            agent.cost = self.parent.getCost()
+            agent.reward = self.parent.getReward()
+
+        if self.parent.getTimeType(): # finite
+            globals.gLastIteration = globals.gGameLength
+        elif self.parent.getGameType(): # infinite and continuous
+            globals.gLastIteration = np.random.exponential(scale=1.0 / self.parent.getTimeType()[1])
+        else: # infinite and discrete
+            globals.gLastIteration = np.random.geometric(p=self.parent.getTimeType()[1])
+
+        if self.agents[0].strategy.get() == 3: # interactive mode
+            globals.gInteractive = True
+        else:
+            globals.gInteractive = False
+
+    def play(self):
+        """
+        Play game button
+        :return:
+        """
+        self.updateParameters()
+
+        if self.mode == 0:
+            # update button states
+            if globals.gInteractive:  # interactive
+                self.flipButton.config(state="active")
+            else:
+                self.flipButton.config(state="disabled")
+
+        self.updateMode()
+
+    def start(self):
+        """
+        Start game button
+        :return:
+        """
+        self.updateParameters()
+        self.startButton.config(text="Stop")
+
+        if globals.gDebug:
+            print('Writing log in ' + str(globals.gLogFileName) + '\n')
+
+        self._job = self.after(50, self.run)
+
+    def stop(self):
+        """
+        Stop game button
+        :return:
+        """
+        self.startButton.config(text="Restart")
+
+        if self._job is not None:
+            self.after_cancel(self._job)
+            self._job = None
+
+        self.main.upperFrame.showFlips()
+
+        if globals.gIteration < globals.gGameLength:
+            globals.gCurrentOwner.addReward()
+
+        self.updateDisplayScore()
+        endGame(self.agents)
+
+    def restart(self):
+        """
+        Restart game button
+        :return:
+        """
+        self.startButton.config(text="Start")
+        resetGame(self.agents)
+        self.main.resetMainWindow()
+
+    def flip(self):
+        """
+        Flip button
+        :return:
+        """
+        self.agents[0].flip = True
+        self.agents[0].flipTime = globals.gIteration
+        self.main.upperFrame.addFlip(self.agents[0])  # flip
+        self.main.upperFrame.showFlips()  # show previous flips
+
+    def updateDisplayScore(self):
         """
         Updates display of scores
         :return:
         """
         self.parent.scoreFrame.updateDisplayScore()
 
-    def run(self, agents):
+    def generateRandomSeeds(self):
+        """
+        Generates random seeds for each agent
+        :param agents: list of agents
+        :return:
+        """
+        globals.gRandomSeeds = {agent.id:np.random.uniform(0, 1.0) for agent in self.agents}
+
+    def run(self):
         """
         Run game
         :param agents:
         :param environment:
         :return:
         """
-        run_environment(self, agents)
+        if not globals.gEndGame:
+            if globals.gDebug:
+                print('\nCurrent iteration : ' + str(globals.gIteration))
 
-    def getCost(self):
-        return eval(self.parent.parameterFrame.entryCost.get())
+            self.main.upperFrame.displayRun()
 
-    def getReward(self):
-        return eval(self.parent.parameterFrame.entryReward.get())
+            writeLog(globals.gLogFileName, globals.gIteration, self.agents) # log data
+            self.generateRandomSeeds()
 
-    def getGameType(self):
-        return self.parent.gameTypeFrame.type
+            if self.decisionProcess():
+                self.updateMode()
 
-    def getTimeType(self):
-        return self.parent.timeFrame.time, eval(self.parent.timeFrame.probability.get())
+        self._job = self.after(50, self.run)
 
-    def getAgent0(self):
-        return self.root.agents[0]
+    def decisionProcess(self):
+        """
+        Flip for each agent
+        :param agents: list of agents
+        :return: boolean, whether game ends
+        """
+        flipped = {}
+        for agent in self.agents:
+            if not globals.gInteractive or (globals.gInteractive and agent.id != 0): # any agent that is not human
+                agent.flipDecision(continuous=0)
+            flipped[agent] = agent.flip
+        globals.gIteration += 1
+
+        if globals.gDebug:
+            flipsSt = 'Agents flip decisions : {'
+            for ag,dec in flipped.items():
+                flipsSt += 'Agent ' + str(ag.id) + ' : ' + str(dec) + ', '
+            flipsSt = flipsSt[:-2] + '}'
+            print(flipsSt)
+            print('Current owner : ' + str(globals.gCurrentOwner.id))
+
+        # if any agent flipped
+        if any(flipped.values()):
+            # add reward to current owner
+            globals.gCurrentOwner.addReward()
+
+            # update history + add flip penalty
+            flippedAgents = [agent for agent in flipped.keys() if flipped[agent]]
+            for agent in flippedAgents:
+                agent.updateHistory()
+                agent.addPenalty()
+
+            # choose new owner at random
+            agentOrder = np.random.permutation(flippedAgents)
+            globals.gCurrentOwner = agentOrder[-1]
+            if globals.gDebug:
+                print('New owner : ' + str(globals.gCurrentOwner.id))
+
+            # add flip on board
+            if not globals.gInteractive or (globals.gInteractive and globals.gCurrentOwner.id != 0):
+                self.main.upperFrame.addFlip(globals.gCurrentOwner)
+
+            # update score display
+            if not globals.gInteractive or (globals.gInteractive and globals.gCurrentOwner.id == 0):
+                self.updateDisplayScore()
+
+        # check if end of game
+        if globals.gIteration >= globals.gLastIteration:
+            globals.gCurrentOwner.addReward()
+            return True
+
+        return False
+

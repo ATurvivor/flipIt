@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 
-global gIteration
-
 # Data
 global gLogFileName
 global gLogData # boolean
 
 global gDebug
+
+# Game globals
+global gIteration
+global gEnvironment
+global gInteractive
+global gCurrentOwnerId
+global gCurrentOwner
 
 # Agents
 global gAgentStartId
@@ -15,19 +20,14 @@ global gFlipCost
 global gFlipReward
 global gRandomSeeds
 
-# Game globals
-global gEnvironment
-global gInteractive
-global gCurrentOwner
-
-global gCurrentTime
+# Variations of the Game
 global gFiniteTime
-global gGameType
-global gLastIteration
+global gContinuous
 
 global gEndGameProbability # [0,1]
 global gEndGame # boolean
+global gGameLength # length of game, discrete mode
+global gLastIteration # last iteration
 
-global gGameEnd #Time of game end
 global gGameFlips #Game history of player flips, first index agent id
 global gFlipped #Stores next flip times, only used for continuous game type

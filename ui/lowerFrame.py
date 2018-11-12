@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from Tkinter import *
+from tkinter import *
 
 from ui.lowerFrameWidgets.strategyChoiceFrame import strategyChoiceFrame
 from ui.lowerFrameWidgets.gameTypeFrame import gameTypeFrame
@@ -14,16 +14,15 @@ class lowerFrame(Frame):
     """
     Lower frame of UI
     """
-    def __init__(self, master):
+    def __init__(self, master, agents):
         Frame.__init__(self, master, width=600, height=200)
-        self.parent = master # give direct access to mainWindow
-        # Frames
-        self.strategyChoiceFrame = strategyChoiceFrame(self, master)
-        self.gameTypeFrame = gameTypeFrame(self, master)
-        self.timeFrame = timeFrame(self, master)
-        self.parameterFrame = parameterFrame(self, master)
-        self.scoreFrame = scoreFrame(self, master)
-        self.controlButtonsFrame = controlButtons(self, master)
+        self.parent = master
+        self.strategyChoiceFrame = strategyChoiceFrame(self, agents)
+        self.gameTypeFrame = gameTypeFrame(self)
+        self.timeFrame = timeFrame(self)
+        self.parameterFrame = parameterFrame(self)
+        self.scoreFrame = scoreFrame(self, agents)
+        self.controlButtonsFrame = controlButtons(master, self, agents)
         self.addWidgets()
 
     def addWidgets(self):
@@ -33,4 +32,39 @@ class lowerFrame(Frame):
         self.gameTypeFrame.grid(row=1, column=0, sticky=W+E+S+N)
         self.timeFrame.grid(row=1, column=1, sticky=W+E+S+N)
         self.parameterFrame.grid(row=1, column=2, columnspan=2, sticky=W+E+S+N)
+
+    def getCost(self):
+        """
+        Return flip cost
+        :return:
+        """
+        return eval(self.parameterFrame.cost.get())
+
+    def getReward(self):
+        """
+        Return flip reward
+        :return:
+        """
+        return eval(self.parameterFrame.reward.get())
+
+    def getGameType(self):
+        """
+        Return game type (discrete, continuous)
+        :return:
+        """
+        return self.gameTypeFrame.type.get()
+
+    def getTimeType(self):
+        """
+        Return time type (infinite, finite)
+        :return:
+        """
+        return self.timeFrame.time, eval(self.timeFrame.probability.get())
+
+    def getAgent0(self):
+        """
+
+        :return:
+        """
+        return self.agents[0]
 

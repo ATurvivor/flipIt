@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-from Tkinter import *
-
+from tkinter import *
 from config import globals
 
 boardColor = ['red3', 'medium blue']

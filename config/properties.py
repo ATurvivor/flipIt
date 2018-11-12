@@ -30,35 +30,33 @@ def setProperties(properties):
     :param properties: properties dictionary
     :return:
     """
-    globals.gIteration = 0.0
-
+    # Data log
     globals.gLogFileName = eval(properties['gLogFileName'])
     globals.gLogData = eval(properties['gLogData'])
 
     globals.gDebug = eval(properties['gDebug'])
 
+    # Game globals
+    globals.gIteration = 0.0
+    globals.gEnvironment = eval(properties['gEnvironment'])
+    globals.gInteractive = eval(properties['gInteractive'])
+    globals.gCurrentOwnerId = eval(properties['gCurrentOwnerId'])
+
+    # Agents
     globals.gAgentStartId = eval(properties['gAgentStartId'])
     globals.gNbAgents = eval(properties['gNbAgents'])
     globals.gFlipCost = eval(properties['gFlipCost'])
     globals.gFlipReward = eval(properties['gFlipReward'])
     globals.gRandomSeeds = {}
 
-    # Game globals
-    globals.gEnvironment = eval(properties['gEnvironment'])
-    globals.gInteractive = eval(properties['gInteractive'])
-    globals.gCurrentOwner = eval(properties['gCurrentOwner'])
-
-    globals.gCurrentTime = eval(properties['gCurrentTime'])
+    # Variations of the Game
     globals.gFiniteTime = eval(properties['gFiniteTime'])
-    globals.gGameType = eval(properties['gGameType'])
+    globals.gContinuous = eval(properties['gContinuous'])
 
     globals.gEndGameProbability = eval(properties['gEndGameProbability'])
     globals.gEndGame = eval(properties['gEndGame'])
+    globals.gGameLength = eval(properties['gGameLength'])
+    globals.gLastIteration = eval(properties['gGameLength'])
 
-    globals.gLastIteration = eval(properties['gLastIteration'])
-    globals.gGrid = eval(properties['gGrid'])
-
-
-    globals.gPrec = eval(properties['gPrec'])
-    globals.gGameFlips = [[] for _ in range(globals.gNbAgents)]
+    globals.gGameFlips = {idx : [] for idx in range(globals.gNbAgents)}
     globals.gFlipped = {}

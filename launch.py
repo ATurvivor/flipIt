@@ -4,12 +4,13 @@ import sys
 from os import getcwd
 sys.path.append(getcwd())
 
-from Tkinter import *
+from tkinter import *
 from ui.mainWindow import MainWindow
 
 from run import *
 from agents.agent import *
 from config.properties import *
+
 
 def launch():
     """
@@ -30,42 +31,44 @@ def launch():
 
         root.mainloop()
 
-    else:
-        if globals.gGrid:
-            globals.gScoresGrid=np.zeros([len(agent_params),len(agent_params)])
-            print(globals.gScoresGrid)
-            for ii in range(len(agent_params)):
-                for jj in range(len(agent_params)):
-                    print(ii,jj)
-                    ij_score=0.0
-                    ji_score=0.0
-                    i=agent_params[ii]
-                    j=agent_params[jj]
-                    agent_pair=[Agent(strategy=i[0],strategyParam=i[1]),Agent(strategy=j[0],strategyParam=j[1])]
-                    globals.gCurrentOwner = agent_pair[0]
-                    run_simulation(agent_pair)
-                    ij_score+=agent_pair[0].score/(2.0*globals.gLastIteration)
-                    ji_score += agent_pair[1].score/(2.0*globals.gLastIteration)
-                    setProperties(readProperties('config/test.properties'))
-                    globals.gAgentStartId=0
-                    agent_pair=[Agent(strategy=j[0],strategyParam=j[1]),Agent(strategy=i[0],strategyParam=i[1])]
-                    globals.gCurrentOwner = agent_pair[0]
-                    run_simulation(agent_pair)
-                    ij_score+=agent_pair[1].score/(2.0*globals.gLastIteration)
-                    ji_score += agent_pair[0].score/(2.0*globals.gLastIteration)
-                    setProperties(readProperties('config/test.properties'))
-                    globals.gAgentStartId = 0
+    # else:
+    #     if globals.gGrid:
+    #         globals.gScoresGrid=np.zeros([len(agent_params),len(agent_params)])
+    #         print(globals.gScoresGrid)
+    #         for ii in range(len(agent_params)):
+    #             for jj in range(len(agent_params)):
+    #                 print(ii,jj)
+    #                 ij_score=0.0
+    #                 ji_score=0.0
+    #                 i=agent_params[ii]
+    #                 j=agent_params[jj]
+    #                 agent_pair=[Agent(strategy=i[0],strategyParam=i[1]),Agent(strategy=j[0],strategyParam=j[1])]
+    #                 globals.gCurrentOwner = agent_pair[0]
+    #                 run_simulation(agent_pair)
+    #                 ij_score+=agent_pair[0].score/(2.0 * globals.gGameLength)
+    #                 ji_score += agent_pair[1].score/(2.0 * globals.gGameLength)
+    #                 setProperties(readProperties('config/test.properties'))
+    #                 globals.gAgentStartId=0
+    #                 agent_pair=[Agent(strategy=j[0],strategyParam=j[1]),Agent(strategy=i[0],strategyParam=i[1])]
+    #                 globals.gCurrentOwner = agent_pair[0]
+    #                 run_simulation(agent_pair)
+    #                 ij_score+=agent_pair[1].score/(2.0 * globals.gGameLength)
+    #                 ji_score += agent_pair[0].score/(2.0 * globals.gGameLength)
+    #                 setProperties(readProperties('config/test.properties'))
+    #                 globals.gAgentStartId = 0
+    #
+    #                 globals.gScoresGrid[ii, jj] = ij_score
+    #                 globals.gScoresGrid[jj, ii] = ji_score
+    #
+    #         print(globals.gScoresGrid)
+    #
+    #     else:
+    #         agents = [Agent(strategy=agent_params[idx][0], strategyParam=agent_params[idx][1]) for idx in
+    #                   range(globals.gNbAgents)]
+    #         globals.gCurrentOwner = agents[0]
+    #         run_simulation(agents)
+    #         print(agents[1].score)
 
-                    globals.gScoresGrid[ii, jj] = ij_score
-                    globals.gScoresGrid[jj, ii] = ji_score
 
-            print(globals.gScoresGrid)
-
-        else:
-            agents = [Agent(strategy=agent_params[idx][0], strategyParam=agent_params[idx][1]) for idx in
-                      range(globals.gNbAgents)]
-            globals.gCurrentOwner = agents[0]
-            run_simulation(agents)
-            print(agents[1].score)
 if __name__ == '__main__':
     launch()

@@ -12,8 +12,6 @@ def endGame(agents):
     globals.gEndGame = True
     if globals.gDebug:
         print('\nGame ended.')
-    log.writeLog(globals.gLogFileName, globals.gIteration, agents)
-    #TODO add update score
 
 def resetGame(agents):
     """
@@ -22,6 +20,7 @@ def resetGame(agents):
     :param environment : (optional) mainwindow frame
     :return:
     """
+    globals.gEndGame = True
     if globals.gDebug:
         print('Resetting game.')
 

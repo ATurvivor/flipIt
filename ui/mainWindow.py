@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from Tkinter import *
+from tkinter import *
 from ui.lowerFrame import lowerFrame
 from ui.upperFrame import upperFrame
 
@@ -10,44 +10,20 @@ class MainWindow(Frame):
     """
     def __init__(self, master, agents):
         Frame.__init__(self, master)
-        self.agents = agents
         self.parent = master
+        self.agents = agents
         self.upperFrame = upperFrame(self)
-        self.lowerFrame = lowerFrame(self)
+        self.lowerFrame = lowerFrame(self, agents)
         self.packElements()
 
     def packElements(self):
-        self.packUpperFrame()
-        self.packLowerFrame()
-
-    def packUpperFrame(self):
-        if self.upperFrame:
-            self.upperFrame.pack(side=TOP, padx=10, pady=10)
-
-    def packLowerFrame(self):
-        if self.lowerFrame:
-            self.lowerFrame.pack(side=BOTTOM, padx=10, pady=10)
-
-    def setUpperFrame(self, frame):
-        """
-        Change the upperFrame
-        :param frame: widget that will replace the old one
-        """
-        if self.upperFrame:
-            self.upperFrame.destroy()
-        self.upperFrame = frame
-        self.packUpperFrame()
-
-    def setLowerFrame(self, frame):
-        """
-        Change the lowerFrameWidgets
-        :param frame: widget that will replace the old one
-        """
-        if self.lowerFrame:
-            self.lowerFrame.destroy()
-        self.lowerFrame = frame
-        self.packLowerFrame()
+        self.upperFrame.pack(side=TOP, padx=10, pady=10)
+        self.lowerFrame.pack(side=BOTTOM, padx=10, pady=10)
 
     def resetMainWindow(self):
+        """
+        Reset main window
+        :return:
+        """
         self.lowerFrame.scoreFrame.updateDisplayScore()
         self.upperFrame.resetBoard()

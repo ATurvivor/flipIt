@@ -6,7 +6,7 @@ from config.log import initLogFileName, writeLog
 import numpy as np
 
 
-def initParameters():
+def initParameters(agents):
     """
     Initialises game parameters
     :param environment:
@@ -14,13 +14,14 @@ def initParameters():
     """
     globals.gLogFileName = initLogFileName() # initialise log file name
     globals.gAgentStartId = 0
+    globals.gCurrentOwner = agents[globals.gCurrentOwnerId]
 
     if globals.gFiniteTime == 1: # finite
-        globals.gGameEnd = globals.gLastIteration
-    elif globals.gGameType == 0: # infinite and continuous
-        globals.gGameEnd = np.random.exponential(scale=1.0 / globals.gEndGameProbability)
+        globals.gLastIteration = globals.gGameLength
+    elif globals.gContinuous: # infinite and continuous
+        globals.gLastIteration = np.random.exponential(scale=1.0 / globals.gEndGameProbability)
     else: # infinite and discrete
-        globals.gGameEnd = np.random.geometric(p=globals.gEndGameProbability)
+        globals.gLastIteration = np.random.geometric(p=globals.gEndGameProbability)
 
 def run_simulation(agents):
     """
@@ -29,7 +30,7 @@ def run_simulation(agents):
     :param environment: (optional) environment frame (example : mainWindow)
     :return:
     """
-    initParameters() # initialise game parameters
+    initParameters(agents) # initialise game parameters
 
     if globals.gDebug:
         print('Writing log in ' + str(globals.gLogFileName) + '\n')
@@ -62,7 +63,7 @@ def run_environment(env, agents):
         generateRandomSeeds(agents)
 
         if decisionProcess(agents, env):
-            env.updateBoard()
+            env.updateMode()
 
         if not globals.gInteractive:
             env.updateScore()
@@ -84,39 +85,43 @@ def decisionProcess(agents, env=None):
     :return: boolean, whether game ends
     """
     # continuous
-    if globals.gGameType == 0:
+    if globals.gContinuous:
         flipped = globals.gFlipped
         if globals.gIteration == 0.0: # first iteration
             for agent in agents: # initialize all agents flip times
-                agent.flipDecision(gameType=0)
+                agent.flipDecision(continuous=1)
                 flipped[agent] = agent.flipTime
         else:
             # TODO fix collisions
             # Updates only previous owners flip time
             # This method doesn't yet work for continuous collisions
-            globals.gCurrentOwner.flipDecision(gameType=0)
+            globals.gCurrentOwner.flipDecision(continuous=1)
             flipped[globals.gCurrentOwner] = globals.gCurrentOwner.flipTime + globals.gIteration+globals.gPrec*np.random.random()
 
         globals.gFlipped = flipped
-        globals.gIteration = np.minimum(np.amin(flipped.values()), globals.gGameEnd)
+        globals.gIteration = np.minimum(np.amin(flipped.values()), globals.gLastIteration)
         flipValue = globals.gIteration
 
     # discrete
-    elif (env and env.getGameType()) or (not env and globals.gGameType):
+    elif (env and not env.getGameType()) or (not env and not globals.gContinuous):
         flipped = {} # agents that flip or flip times for discrete/continuous respectively
         for agent in agents:
             if (globals.gInteractive and agent.id != 0) or not globals.gInteractive: # any agent that is not human
-                agent.flipDecision(1)
+                agent.flipDecision(continuous=0)
             flipped[agent] = agent.flip
         globals.gIteration += 1
         flipValue = True
 
     if globals.gDebug:
-        print('Agents flip decisions : ' + str(flipped))
+        flipsString = 'Agents flip decisions : {'
+        for ag,dec in flipped.items():
+            flipsString += 'Agent ' + str(ag.id) + ' : ' + str(dec) + ', '
+        flipsString = flipsString[:-2] + '}'
+        print(flipsString)
         print('Current owner : ' + str(globals.gCurrentOwner.id))
 
     # check if end of game
-    if globals.gIteration >= globals.gGameEnd:
+    if globals.gIteration >= globals.gLastIteration:
         globals.gCurrentOwner.addReward()
         return True
 

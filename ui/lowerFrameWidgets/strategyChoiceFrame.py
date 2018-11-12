@@ -1,35 +1,38 @@
 #!/usr/bin/env python
 
-from Tkinter import *
-
+from tkinter import *
+from config import globals
 
 class strategyChoiceFrame(Frame):
-    def __init__(self, master, root):
+    def __init__(self, master, agents):
         Frame.__init__(self, master, width=600, height=200)
-        self.root = root # mainWindow Frame
         self.parent = master
+        self.agents = agents
         self.strategyChoiceFrame = None
-        self.root.agents[0].strategy = IntVar()
-        self.root.agents[1].strategy = IntVar()
+        self.agents[0].strategy = IntVar()
+        self.agents[1].strategy = IntVar()
         self.strategyChoice()
 
     def strategyChoice(self):
         # Variable initialization
         self.strategyChoiceFrame = LabelFrame(self, text="Agent Strategies", padx=10, pady=10)
-        self.root.agents[0].strategy.set(0)
-        self.root.agents[1].strategy.set(0)
+        if globals.gInteractive:
+            self.agents[0].strategy.set(3)
+        else:
+            self.agents[0].strategy.set(0)
+        self.agents[1].strategy.set(0)
 
         # Widgets declaration
         labelS1 = Label(self.strategyChoiceFrame, text="Player 1", font=("", 12))
         labelS2 = Label(self.strategyChoiceFrame, text="Player 2", font=("", 12))
 
-        radioRandomDec1 = Radiobutton(self.strategyChoiceFrame, text="Random Decayed", variable=self.root.agents[0].strategy, value=0)
-        radioPeriodic1 = Radiobutton(self.strategyChoiceFrame, text="Periodic", variable=self.root.agents[0].strategy, value=1)
-        radioDelRandomDec1 = Radiobutton(self.strategyChoiceFrame, text="Delayed Random Decayed", variable=self.root.agents[0].strategy, value=2)
-        radioInteractive = Radiobutton(self.strategyChoiceFrame, text="Interactive", variable=self.root.agents[0].strategy, value=3)
-        radioRandomDec2 = Radiobutton(self.strategyChoiceFrame, text="Random Decayed", variable=self.root.agents[1].strategy, value=0)
-        radioPeriodic2 = Radiobutton(self.strategyChoiceFrame, text="Periodic", variable=self.root.agents[1].strategy, value=1)
-        radioDelRandomDec2 = Radiobutton(self.strategyChoiceFrame, text="Delayed Random Decayed", variable=self.root.agents[1].strategy, value=2)
+        radioRandomDec1 = Radiobutton(self.strategyChoiceFrame, text="Random Decayed", variable=self.agents[0].strategy, value=0)
+        radioPeriodic1 = Radiobutton(self.strategyChoiceFrame, text="Periodic", variable=self.agents[0].strategy, value=1)
+        radioDelRandomDec1 = Radiobutton(self.strategyChoiceFrame, text="Delayed Random Decayed", variable=self.agents[0].strategy, value=2)
+        radioInteractive = Radiobutton(self.strategyChoiceFrame, text="Interactive", variable=self.agents[0].strategy, value=3)
+        radioRandomDec2 = Radiobutton(self.strategyChoiceFrame, text="Random Decayed", variable=self.agents[1].strategy, value=0)
+        radioPeriodic2 = Radiobutton(self.strategyChoiceFrame, text="Periodic", variable=self.agents[1].strategy, value=1)
+        radioDelRandomDec2 = Radiobutton(self.strategyChoiceFrame, text="Delayed Random Decayed", variable=self.agents[1].strategy, value=2)
 
         # Widgets display
         labelS1.grid(row=0, column=0, columnspan=2, sticky=W)
