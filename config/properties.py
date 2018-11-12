@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import numpy as np
 from config import globals
 
 
@@ -57,6 +56,7 @@ def setProperties(properties):
     globals.gEndGame = eval(properties['gEndGame'])
     globals.gGameLength = eval(properties['gGameLength'])
     globals.gLastIteration = eval(properties['gGameLength'])
+    globals.gPrec = eval(properties['gPrec'])
 
     globals.gGameFlips = {idx : [] for idx in range(globals.gNbAgents)}
     globals.gFlipped = {}

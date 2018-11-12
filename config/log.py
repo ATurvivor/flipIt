@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from config import globals
+
 from datetime import datetime
 
 # TODO : complete log
@@ -37,9 +37,6 @@ def writeLog(fileName, it, agents):
         agentsLog += ',' + str(ag.score)
     log = str(it) + agentsLog
     f.write(log + '\n')
-
-    if globals.gDebug:
-        print('Log : ' + log)
 
     f.close()
 

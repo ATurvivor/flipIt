@@ -12,6 +12,8 @@ def endGame(agents):
     globals.gEndGame = True
     if globals.gDebug:
         print('\nGame ended.')
+        for agent in agents:
+            print('Agent ' + str(agent.id) + ' has a final score ' + str(agent.score))
 
 def resetGame(agents):
     """
@@ -22,7 +24,7 @@ def resetGame(agents):
     """
     globals.gEndGame = True
     if globals.gDebug:
-        print('Resetting game.')
+        print('\nResetting game.')
 
     for ag in agents:
         ag.score = 0

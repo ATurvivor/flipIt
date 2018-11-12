@@ -7,17 +7,17 @@ sys.path.append(getcwd())
 from tkinter import *
 from ui.mainWindow import MainWindow
 
-from run import *
+from simulations.run import *
 from agents.agent import *
 from config.properties import *
 
 
-def launch():
+def main():
     """
     Run game
     :return:
     """
-    setProperties(readProperties('config/test.properties'))
+    setProperties(readProperties('config/parameters/exp.properties'))
     agent_params=[(1,.005),(1,.01),(2,(.005,.005)),(2,(.0025,.0025)),(0,.005),(0,.01)]
 
     if globals.gEnvironment:
@@ -30,6 +30,10 @@ def launch():
         main_window.pack()
 
         root.mainloop()
+
+    else:
+        agents = [Agent(strategy=agent_params[idx][0], strategyParam=agent_params[idx][1]) for idx in range(globals.gNbAgents)]
+        run(agents)
 
     # else:
     #     if globals.gGrid:
@@ -44,14 +48,14 @@ def launch():
     #                 j=agent_params[jj]
     #                 agent_pair=[Agent(strategy=i[0],strategyParam=i[1]),Agent(strategy=j[0],strategyParam=j[1])]
     #                 globals.gCurrentOwner = agent_pair[0]
-    #                 run_simulation(agent_pair)
+    #                 run(agent_pair)
     #                 ij_score+=agent_pair[0].score/(2.0 * globals.gGameLength)
     #                 ji_score += agent_pair[1].score/(2.0 * globals.gGameLength)
     #                 setProperties(readProperties('config/test.properties'))
     #                 globals.gAgentStartId=0
     #                 agent_pair=[Agent(strategy=j[0],strategyParam=j[1]),Agent(strategy=i[0],strategyParam=i[1])]
     #                 globals.gCurrentOwner = agent_pair[0]
-    #                 run_simulation(agent_pair)
+    #                 run(agent_pair)
     #                 ij_score+=agent_pair[1].score/(2.0 * globals.gGameLength)
     #                 ji_score += agent_pair[0].score/(2.0 * globals.gGameLength)
     #                 setProperties(readProperties('config/test.properties'))
@@ -66,9 +70,9 @@ def launch():
     #         agents = [Agent(strategy=agent_params[idx][0], strategyParam=agent_params[idx][1]) for idx in
     #                   range(globals.gNbAgents)]
     #         globals.gCurrentOwner = agents[0]
-    #         run_simulation(agents)
+    #         run(agents)
     #         print(agents[1].score)
 
 
 if __name__ == '__main__':
-    launch()
+    main()

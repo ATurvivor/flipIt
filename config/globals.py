@@ -28,6 +28,7 @@ global gEndGameProbability # [0,1]
 global gEndGame # boolean
 global gGameLength # length of game, discrete mode
 global gLastIteration # last iteration
+global gPrec # precision
 
 global gGameFlips #Game history of player flips, first index agent id
 global gFlipped #Stores next flip times, only used for continuous game type
