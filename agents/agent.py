@@ -15,7 +15,7 @@ class Agent:
         self.flip = False
         self.flipTime = 10.0
         self.lastFlipTime = 0
-        self.history = {idx : [] for idx in range(globals.gNbAgents)} # list history of flip times
+        self.knowledge = {idx : [0] for idx in range(globals.gNbAgents)} # list knowledge of flip times
         self.updateAgentIds()
 
     def updateAgentIds(self):
@@ -27,7 +27,7 @@ class Agent:
         :param continuous: continuous or discrete
         :return:
         """
-        strategies = {0 : randomDecayed, 1 : periodic, 2 : delayedRandomDecayed}
+        strategies = {0 : periodic, 1 : uniform, 2 : delayedUniform, 3 : exponential, 4 : delayedExponential}
         if globals.gEnvironment:
             return strategies[self.strategy.get()](self, continuous)
         return strategies[self.strategy](self, continuous)
@@ -54,14 +54,14 @@ class Agent:
         if globals.gDebug:
             print('Agent ' + str(self.id) + ' has score ' + str(self.score) + ' after reward.')
 
-    def updateHistory(self):
+    def updateKnowledge(self):
         """
         Update agent's perspective depending on type (LM, FH)
         :return:
         """
-        globals.gGameFlips[self.id].append(globals.gIteration)
+        # globals.gGameFlips[self.id].append(globals.gIteration)
         for idx in range(globals.gNbAgents):
             if self.type == 'LM': # last move
-                self.history[idx].append(globals.gGameFlips[idx][-1])
+                self.knowledge[idx].append(globals.gGameFlips[idx][-1])
             elif self.type == 'FH': # full history
-                self.history[idx] = globals.gGameFlips[idx]
+                self.knowledge[idx] = globals.gGameFlips[idx]

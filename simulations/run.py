@@ -53,8 +53,11 @@ def run(agents):
         generateRandomSeeds(agents)
 
         if decisionProcess(agents):
+            fscores = {agent.id : agent.score for agent in agents} # new
             endGame(agents)
             resetGame(agents)
+
+            return fscores # new
 
 def decisionProcess(agents):
     """
@@ -107,11 +110,14 @@ def decisionProcess(agents):
         # add reward to current owner
         globals.gCurrentOwner.addReward()
 
-        # update history + add flip penalty
+        # update knowledge + add flip penalty
         flippedAgents = [agent for agent in flipped.keys() if flipped[agent] == flipValue]
         for agent in flippedAgents:
-            agent.updateHistory()
+            globals.gGameFlips[agent.id].append(globals.gIteration)
+
+        for agent in flippedAgents:
             agent.addPenalty()
+            agent.updateKnowledge()
 
         # choose new owner at random
         agentOrder = np.random.permutation(flippedAgents)

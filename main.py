@@ -17,7 +17,7 @@ def main():
     Run game
     :return:
     """
-    setProperties(readProperties('config/parameters/exp.properties'))
+    setProperties(readProperties('config/parameters/test.properties'))
     agent_params=[(1,.005),(1,.01),(2,(.005,.005)),(2,(.0025,.0025)),(0,.005),(0,.01)]
 
     if globals.gEnvironment:

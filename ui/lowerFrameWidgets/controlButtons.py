@@ -8,6 +8,7 @@ from config.log import initLogFileName, writeLog
 
 import numpy as np
 
+varInteractive = 5
 
 class controlButtons(Frame):
     def __init__(self, main, master, agents):
@@ -41,11 +42,15 @@ class controlButtons(Frame):
         Start, stop or restart game
         :return:
         """
+        print(self.mode)
         self.mode = (self.mode + 1) % 3 # update mode
 
-        if self.mode == 1: self.start()
-        elif self.mode == 2: self.stop()
-        else: self.restart()
+        if self.mode == 1:
+            self.start()
+        elif self.mode == 2:
+            self.stop()
+        else:
+            self.restart()
 
     def updateParameters(self):
         """
@@ -68,7 +73,7 @@ class controlButtons(Frame):
         else: # infinite and discrete
             globals.gLastIteration = np.random.geometric(p=self.parent.getTimeType()[1])
 
-        if self.agents[0].strategy.get() == 3: # interactive mode
+        if self.agents[0].strategy.get() == varInteractive: # interactive mode
             globals.gInteractive = True
         else:
             globals.gInteractive = False
@@ -78,9 +83,9 @@ class controlButtons(Frame):
         Play game button
         :return:
         """
-        self.updateParameters()
-
         if self.mode == 0:
+            self.updateParameters()
+
             # update button states
             if globals.gInteractive:  # interactive
                 self.flipButton.config(state="active")
@@ -94,7 +99,6 @@ class controlButtons(Frame):
         Start game button
         :return:
         """
-        self.updateParameters()
         self.startButton.config(text="Stop")
 
         if globals.gDebug:
@@ -171,7 +175,7 @@ class controlButtons(Frame):
             writeLog(globals.gLogFileName, globals.gIteration, self.agents) # log data
             self.generateRandomSeeds()
 
-            if self.decisionProcess():
+            if self.decisionProcess(): # game ended
                 self.updateMode()
 
         self._job = self.after(50, self.run)
@@ -202,10 +206,10 @@ class controlButtons(Frame):
             # add reward to current owner
             globals.gCurrentOwner.addReward()
 
-            # update history + add flip penalty
+            # update knowledge + add flip penalty
             flippedAgents = [agent for agent in flipped.keys() if flipped[agent]]
             for agent in flippedAgents:
-                agent.updateHistory()
+                agent.updateKnowledge()
                 agent.addPenalty()
 
             # choose new owner at random
