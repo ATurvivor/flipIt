@@ -21,6 +21,9 @@ class Agent:
     def updateAgentIds(self):
         globals.gAgentStartId += 1
 
+    def setAgentId(self, id):
+        self.id = id
+
     def flipDecision(self, continuous):
         """
         Runs agent's strategy and updates its score

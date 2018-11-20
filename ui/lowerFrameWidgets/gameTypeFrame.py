@@ -25,4 +25,4 @@ class gameTypeFrame(Frame):
         radioDiscrete.grid(row=0, column=0, columnspan=2, sticky=W)
         radioContinuous.grid(row=1, column=0, columnspan=2, sticky=W)
 
-        self.gameTypeFrame.pack(side=LEFT, fill=BOTH, expand=1, padx=5, pady=5)
+        self.gameTypeFrame.pack(side=LEFT, fill=BOTH, expand=1, padx=10, pady=10)

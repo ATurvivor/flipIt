@@ -11,6 +11,8 @@ class strategyChoiceFrame(Frame):
         self.parent = master
         self.agents = agents
         self.strategyChoiceFrame = None
+        self.strategy0 = self.agents[0].strategy
+        self.strategy1 = self.agents[1].strategy
         self.agents[0].strategy = IntVar()
         self.agents[1].strategy = IntVar()
         self.strategyChoice()
@@ -21,8 +23,8 @@ class strategyChoiceFrame(Frame):
         if globals.gInteractive:
             self.agents[0].strategy.set(varInteractive)
         else:
-            self.agents[0].strategy.set(0)
-        self.agents[1].strategy.set(0)
+            self.agents[0].strategy.set(self.strategy0)
+        self.agents[1].strategy.set(self.strategy1)
 
         # Widgets declaration
         labelS1 = Label(self.strategyChoiceFrame, text="Player 1", font=("", 12))
@@ -57,4 +59,4 @@ class strategyChoiceFrame(Frame):
         radioStrategy23.grid(row=4, column=2, columnspan=2, sticky=W)
         radioStrategy24.grid(row=5, column=2, columnspan=2, sticky=W)
 
-        self.strategyChoiceFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
+        self.strategyChoiceFrame.pack(side=LEFT, fill=Y, padx=10, pady=10)

@@ -18,10 +18,10 @@ class upperFrame(Frame):
         Displays environment board
         :return:
         """
-        self.boardFrame = Canvas(self, width=710, height=200)
-        self.boardFrame.create_line(10, 100, 710, 100, width=3, arrow='last')
+        self.boardFrame = Canvas(self, width=660, height=200)
+        self.boardFrame.create_line(10, 100, 660, 100, width=3, arrow='last')
         self.boardFrame.create_line(10, 50, 10, 150, width=3)
-        self.boardFrame.grid(row=1, column=1)
+        self.boardFrame.grid(row=1, column=1, padx=50)
 
     def resetBoard(self):
         """
@@ -46,7 +46,7 @@ class upperFrame(Frame):
             self.boardFrame.create_line(self.startCoord, 60, self.startCoord, 142, \
                                         width=1, tags='overlay')
 
-        if self.startCoord == 700:
+        if self.startCoord == 650:
             self.resetBoard()
 
 

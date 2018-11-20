@@ -27,7 +27,7 @@ class scoreFrame(Frame):
         self.labelScoreP1.grid(row=0, column=0, sticky=W)
         self.labelScoreP2.grid(row=1, column=0, sticky=W)
 
-        self.scoreFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
+        self.scoreFrame.pack(side=LEFT, fill=Y, padx=10, pady=10)
 
     def updateDisplayScore(self):
         self.labelScoreP1.config(text="Player 1 : " + str("{0:.2f}".format(self.agents[0].score)))

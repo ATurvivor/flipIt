@@ -18,7 +18,7 @@ class MainWindow(Frame):
 
     def packElements(self):
         self.upperFrame.pack(side=TOP, padx=10, pady=10)
-        self.lowerFrame.pack(side=BOTTOM, padx=10, pady=10)
+        self.lowerFrame.pack(side=BOTTOM, padx=10, pady=(10,50))
 
     def resetMainWindow(self):
         """

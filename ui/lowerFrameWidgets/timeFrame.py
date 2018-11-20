@@ -31,4 +31,4 @@ class timeFrame(Frame):
         entryProbability.grid(row=1, column=1, columnspan=2, sticky=W)
         radioFinite.grid(row=2, column=0, columnspan=2, sticky=W)
 
-        self.timeVariableFrame.pack(side=LEFT, fill=BOTH, expand=1, padx=5, pady=5)
+        self.timeVariableFrame.pack(side=LEFT, fill=BOTH, expand=1, padx=10, pady=10)

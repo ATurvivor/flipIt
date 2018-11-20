@@ -35,14 +35,13 @@ class controlButtons(Frame):
         self.flipButton = Button(self.controlButtonsFrame, text="Flip", command=self.flip, width=8)
         self.flipButton.grid(row=1, column=0, sticky=W)
 
-        self.controlButtonsFrame.pack(side=LEFT, fill=Y, padx=5, pady=5)
+        self.controlButtonsFrame.pack(side=LEFT, fill=Y, padx=10, pady=10)
 
     def updateMode(self):
         """
         Start, stop or restart game
         :return:
         """
-        print(self.mode)
         self.mode = (self.mode + 1) % 3 # update mode
 
         if self.mode == 1:

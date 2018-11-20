@@ -7,10 +7,9 @@ def periodic(agent, continuous):
     Deterministic periodic strategy
     :param agent: agent executing strategy
     :param continuous: True if continuous, false otherwise (discrete)
-    :return: tuple of form (discrete response, continuous response)
+    :return:
     """
     per = 1.0 / agent.strategyParam
-
     if continuous:
         agent.flipTime = per
     elif globals.gIteration - agent.lastFlipTime >= per:
@@ -43,7 +42,7 @@ def delayedExponential(agent, continuous):
     :return:
     """
     p, delay = agent.strategyParam
-    delay=1.0/delay
+    delay = 1.0 / delay
 
     if continuous:
         agent.flipTime = delay + np.random.exponential(scale=1.0/p)
@@ -78,7 +77,7 @@ def delayedUniform(agent, continuous):
     :return: tuple of form (discrete response, continuous response)
     """
     p, delay = agent.strategyParam
-    delay = 1.0/delay
+    delay = 1.0 / delay
 
     if continuous:
         agent.flipTime = delay + np.random.exponential(scale=1.0/p)
