@@ -1,8 +1,14 @@
 from agents.agent import *
 from run import *
 from config.properties import *
+from datetime import datetime
+from random import choice
 
 import matplotlib.pyplot as plt
+
+plt.figure(num=None, figsize=(12, 8), dpi=100, facecolor='w', edgecolor='k')
+plt.subplots_adjust(wspace = 0.6, hspace = 0.5)
+
 
 debug = False
 
@@ -22,6 +28,7 @@ def plot_results():
 
     final_scores = {0 : {}, 1 : {}}
 
+    print('START')
     # for each strategy
     for st, delay in strategies:
         strategy_score = {}
@@ -48,6 +55,8 @@ def plot_results():
                 agents[0].setAgentId(0)
                 agents[1].setAgentId(1)
 
+                globals.gCurrentOwnerId = choice([0,1])
+
                 if debug:
                     print('\t  Simulation ' + str(_))
                 new_scores = run(agents)
@@ -70,6 +79,8 @@ def plot_results():
 
         for idx in strategy_score:
             final_scores[idx][strategies[(st, delay)]] = strategy_score[idx]
+
+    print('END\n\n')
 
     for agent in final_scores:
         print('Agent ' + str(agent) + ' score :')
@@ -126,7 +137,11 @@ def plot_results():
     plt.ylabel('Scores')
     plt.title('Periodic vs. Delayed Exponential (0.005)')
 
-    plt.show()
+    time = datetime.now()
+    fname = 'res/fig' + str(time.year) + str(time.month) + str(time.day) + '-' + \
+            str(time.hour) + 'h' + str(time.minute) + 'm' + str(time.second) + 's' + \
+            str(time.microsecond) + 'us.png'
+    plt.savefig(fname)
 
 
 if __name__ == '__main__':

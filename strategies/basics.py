@@ -86,3 +86,15 @@ def delayedUniform(agent, continuous):
     else:
         agent.flip = False
 
+def idle(agent, continuous):
+    """
+    Idle strategy
+    :param agent:
+    :param continuous:
+    :return:
+    """
+    if continuous:
+        agent.flipTime = -1 # TODO check
+    else:
+        agent.flip = False
+

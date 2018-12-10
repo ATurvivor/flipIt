@@ -208,6 +208,9 @@ class controlButtons(Frame):
             # update knowledge + add flip penalty
             flippedAgents = [agent for agent in flipped.keys() if flipped[agent]]
             for agent in flippedAgents:
+                globals.gGameFlips[agent.id].append(globals.gIteration)
+
+            for agent in flippedAgents:
                 agent.updateKnowledge()
                 agent.addPenalty()
 
