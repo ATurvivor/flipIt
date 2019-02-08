@@ -1,5 +1,5 @@
 from agents.agent import *
-from run import *
+from simulations.run import *
 from config.properties import *
 from datetime import datetime
 from random import choice
