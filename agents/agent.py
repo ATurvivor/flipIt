@@ -15,7 +15,11 @@ class Agent:
         self.flip = False
         self.flipTime = 10.0
         self.lastFlipTime = 0
-        self.knowledge = {idx : [] for idx in range(globals.gNbAgents)} # list knowledge of flip times
+        self.prevScore = 0.0
+        if self.type == 'LM':
+            self.knowledge = {idx: None for idx in range(globals.gNbAgents)}  # list knowledge of flip times
+        else:
+            self.knowledge = {idx : [] for idx in range(globals.gNbAgents)} # list knowledge of flip times
         self.updateAgentIds()
 
     def updateAgentIds(self):
@@ -66,11 +70,26 @@ class Agent:
             if self.type == 'LM': # last move
                 try:
                     if not self.knowledge[idx] or self.knowledge[idx][-1] != globals.gGameFlips[idx][-1]:
-                        self.knowledge[idx].append(globals.gGameFlips[idx][-1])
+                        self.knowledge[idx] = globals.gGameFlips[idx][-1] # only knows most recent flip
+                        #self.knowledge[idx].append(globals.gGameFlips[idx][-1]) # keep storing last moves
                 except:
                     pass
             elif self.type == 'FH': # full history
                 try:
-                    self.knowledge[idx] = globals.gGameFlips[idx]
+                    self.knowledge[idx] = globals.gGameFlips[idx] # list of game flips for agent idx
                 except:
                     pass
+
+    def updatePrevScore(self):
+        self.prevScore = self.score
+
+    def reset_agent(self):
+        self.score = 0.0
+        self.flip = False
+        self.flipTime = 10.0
+        self.lastFlipTime = 0
+        self.prevScore = 0.0
+        if self.type == 'LM':
+            self.knowledge = {idx: None for idx in range(globals.gNbAgents)}  # list knowledge of flip times
+        else:
+            self.knowledge = {idx: [] for idx in range(globals.gNbAgents)}  # list knowledge of flip times

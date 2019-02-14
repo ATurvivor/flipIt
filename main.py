@@ -32,7 +32,7 @@ def main():
         root.mainloop()
 
     else:
-        agents = [Agent(strategy=0), Agent(strategy=0)]
+        agents = [Agent(strategy=0, strategyParam=0.05), Agent(strategy=0, strategyParam=0.053)]
         print(run(agents))
 
 

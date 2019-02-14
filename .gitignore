@@ -1,0 +1,7 @@
+*.pyc
+*.DS_Store
+*.idea/
+results/
+logs/
+notes/
+ui_previous_version/
