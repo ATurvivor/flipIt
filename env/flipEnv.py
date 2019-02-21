@@ -32,7 +32,7 @@ class flipItEnv(Env):
         # set  general variables defining the environment
         globals.gCurrentOwner = self.agents[globals.gCurrentOwnerId]
         self.TOTAL_TIME_STEPS = globals.gGameLength
-        self.curr_step = -1
+        globals.gIteration = -1
         self.done = False
 
         # reinforcement learning variables (actions, observations)
@@ -55,7 +55,7 @@ class flipItEnv(Env):
         if self.done:
             raise RuntimeError("End of the Game")
 
-        self.curr_step += 1
+        globals.gIteration += 1
         self._take_action(action)
         reward = self._get_reward() # reward given following the action
         ob = self._get_state() # get current state of game
@@ -72,17 +72,17 @@ class flipItEnv(Env):
             if agent.strategy == -1: # adaptive strategy
                 flipped[agent] = action # 0 : don't flip, 1 : flip
             else:
-                agent.flipDecision(continuous=0)
+                agent.flipDecision()
                 flipped[agent] = agent.flip
 
-        if globals.gDebug:
-            if flipped.values():
-                flipsSt = 'Agents flip decisions : {'
-                for ag, dec in flipped.items():
-                    flipsSt += 'Agent ' + str(ag.id) + ' : ' + str(dec) + ', '
-                flipsSt = flipsSt[:-2] + '}'
-                print(flipsSt)
-            print('Current owner : ' + str(globals.gCurrentOwner.id))
+        # if globals.gDebug:
+        #     if flipped.values():
+        #         flipsSt = 'Agents flip decisions : {'
+        #         for ag, dec in flipped.items():
+        #             flipsSt += 'Agent ' + str(ag.id) + ' : ' + str(dec) + ', '
+        #         flipsSt = flipsSt[:-2] + '}'
+        #         print(flipsSt)
+        #     print('Current owner : ' + str(globals.gCurrentOwner.id))
 
         # if any agent flipped
         if any(flipped.values()):
@@ -91,10 +91,9 @@ class flipItEnv(Env):
             # update knowledge + add flip penalty
             flippedAgents = [agent for agent in flipped.keys() if flipped[agent]]
             for agent in flippedAgents:
-                globals.gGameFlips[agent.id].append(self.curr_step)
+                globals.gGameFlips[agent.id].append(globals.gIteration)
 
             for agent in flippedAgents:
-                agent.updatePrevScore()
                 agent.updateKnowledge()
                 agent.addPenalty()
 
@@ -102,13 +101,13 @@ class flipItEnv(Env):
             agentOrder = np.random.permutation(flippedAgents)
             try:
                 globals.gCurrentOwner = agentOrder[-1]
-                if globals.gDebug:
-                    print('New owner : ' + str(globals.gCurrentOwner.id))
+                # if globals.gDebug:
+                #     print('New owner : ' + str(globals.gCurrentOwner.id))
             except:
                 pass
 
         # check if end of game
-        if self.curr_step >= self.TOTAL_TIME_STEPS:
+        if globals.gIteration >= self.TOTAL_TIME_STEPS:
             globals.gCurrentOwner.addReward()
             self.done = True
             print('END GAME. Scores : adaptive agent score = {}, non-adaptive agent score = {}'.format(self.agents[0].score, self.agents[1].score))
@@ -126,7 +125,7 @@ class flipItEnv(Env):
         :return:
         """
         opponent_flip = self.dqnAgent.knowledge[1 - self.dqnAgent.id]
-        return [opponent_flip, self.TOTAL_TIME_STEPS - self.curr_step]
+        return [opponent_flip, self.TOTAL_TIME_STEPS - globals.gIteration]
 
     def reset(self):
         """
@@ -137,16 +136,15 @@ class flipItEnv(Env):
         observation (object): the initial observation of the space.
         """
 
-        self._reset_agents()
-        self.curr_step = -1 # reset step counter
-        self.curr_episode += 1 # increase episode number
+        globals.gIteration = -1  # reset step counter
+        for agent in self.agents:
+            agent.reset()
         self.done = False # reset end of game
         self.action_episode_memory.append([])
+
+        self.curr_episode += 1  # increase episode number
         return self._get_state() # get current state of game
 
-    def _reset_agents(self):
-        for agent in self.agents:
-            agent.reset_agent()
 
 
 def callback(lcl, _glb):
@@ -164,7 +162,7 @@ def callback(lcl, _glb):
 if __name__ == '__main__':
     setProperties(readProperties('../config/parameters/dqn.properties'))
 
-    agents = [Agent(strategy=-1, type='LM'), Agent(strategy=0)]
+    agents = [Agent(strategy=-1, type='LM'), Agent(strategy=0, strategyParam=0.02)]
     env = flipItEnv(agents)
     act = deepq.learn(
         env,

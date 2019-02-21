@@ -15,7 +15,6 @@ class Agent:
         self.flip = False
         self.flipTime = 10.0
         self.lastFlipTime = 0
-        self.prevScore = 0.0
         if self.type == 'LM':
             self.knowledge = {idx: None for idx in range(globals.gNbAgents)}  # list knowledge of flip times
         else:
@@ -25,16 +24,16 @@ class Agent:
     def updateAgentIds(self):
         globals.gAgentStartId += 1
 
-    def setAgentId(self, id):
+    def setId(self, id):
         self.id = id
 
-    def flipDecision(self, continuous):
+    def flipDecision(self, continuous=0):
         """
         Runs agent's strategy and updates its score
         :param continuous: continuous or discrete
         :return:
         """
-        strategies = {0 : periodic, 1 : uniform, 2 : delayedUniform, 3 : exponential, 4 : delayedExponential, -1 : idle}
+        strategies = {0 : periodic, 1 : uniform, 2 : delayedUniform, 3 : exponential, 4 : delayedExponential, 'idle' : idle}
         if globals.gEnvironment:
             return strategies[self.strategy.get()](self, continuous)
         return strategies[self.strategy](self, continuous)
@@ -71,7 +70,9 @@ class Agent:
                 try:
                     if not self.knowledge[idx] or self.knowledge[idx][-1] != globals.gGameFlips[idx][-1]:
                         self.knowledge[idx] = globals.gGameFlips[idx][-1] # only knows most recent flip
-                        #self.knowledge[idx].append(globals.gGameFlips[idx][-1]) # keep storing last moves
+
+                        # keeps storing known recent moves
+                        #self.knowledge[idx].append(globals.gGameFlips[idx][-1])
                 except:
                     pass
             elif self.type == 'FH': # full history
@@ -80,16 +81,30 @@ class Agent:
                 except:
                     pass
 
-    def updatePrevScore(self):
-        self.prevScore = self.score
-
-    def reset_agent(self):
+    def reset(self):
+        """
+        Resets agent parameters to default
+        :return:
+        """
         self.score = 0.0
         self.flip = False
         self.flipTime = 10.0
         self.lastFlipTime = 0
-        self.prevScore = 0.0
         if self.type == 'LM':
             self.knowledge = {idx: None for idx in range(globals.gNbAgents)}  # list knowledge of flip times
         else:
             self.knowledge = {idx: [] for idx in range(globals.gNbAgents)}  # list knowledge of flip times
+
+    def setCurrentOwner(self):
+        """
+        Set agent as current owner of the resource
+        :return: None
+        """
+        globals.gCurrentOwner = self
+
+    def isCurrentOwner(self):
+        """
+        Returns True if agents is current owner of the resource
+        :return: boolean
+        """
+        return self == globals.gCurrentOwner

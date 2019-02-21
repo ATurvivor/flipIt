@@ -24,7 +24,7 @@ def main():
         root = Tk()
         root.resizable(width=300, height=300)
 
-        agents = [Agent(strategy=0, strategyParam=0.01, type='LM'), Agent(strategy=1)]
+        agents = [Agent(strategy=0, strategyParam=0.02), Agent(strategy=0, strategyParam=0.025)]
         globals.gCurrentOwner = agents[0]  # default
         main_window = MainWindow(root, agents)
         main_window.pack()
@@ -32,7 +32,7 @@ def main():
         root.mainloop()
 
     else:
-        agents = [Agent(strategy=0, strategyParam=0.05), Agent(strategy=0, strategyParam=0.053)]
+        agents = [Agent(strategy=0, strategyParam=0.2), Agent(strategy=0, strategyParam=0.25)]
         print(run(agents))
 
 

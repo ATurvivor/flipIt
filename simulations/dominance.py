@@ -52,8 +52,8 @@ def plot_results():
             for _ in range(nb_simulations):
                 setProperties(readProperties('../config/parameters/exp.properties'))
                 agents = [Agent(strategy=0, strategyParam=param1), Agent(strategy=st, strategyParam=param2)]
-                agents[0].setAgentId(0)
-                agents[1].setAgentId(1)
+                agents[0].setId(0)
+                agents[1].setId(1)
 
                 globals.gCurrentOwnerId = choice([0,1])
 

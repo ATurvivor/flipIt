@@ -91,7 +91,7 @@ def decisionProcess(agents):
     else:
         flipped = {} # agents that flip or flip times for discrete/continuous respectively
         for agent in agents:
-            agent.flipDecision(continuous=0)
+            agent.flipDecision()
             flipped[agent] = agent.flip
         globals.gIteration += 1
         flipValue = True

@@ -26,10 +26,8 @@ def resetGame(agents):
     if globals.gDebug:
         print('\nResetting game.')
 
-    for ag in agents:
-        ag.score = 0
-        ag.flip = False
-        ag.lastFlipTime = 0
+    for agent in agents:
+        agent.reset()
 
     if globals.gDebug:
         print('END.')
