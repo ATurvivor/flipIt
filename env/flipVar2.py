@@ -83,6 +83,12 @@ class flipItEnv(Env):
                 if agent.flip:
                     agent.lastFlipTime = self.currStep
 
+            sc = 0
+            if agent.isCurrentOwner():
+                sc += - flipped[agent] * self.flipCost + (flipped[agent] + 1) % 2 * self.flipReward
+            else:
+                sc += - (flipped[agent] + 1) % 2 * self.flipCost + flipped[agent] * self.flipReward
+
             # update score : if flip, add flip Cost, if current owner, add owner Reward
             agent.score += - (action and agent.isCurrentOwner()) * self.flipCost + (not action and agent.isCurrentOwner()) * self.flipReward
 
