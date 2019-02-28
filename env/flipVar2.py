@@ -74,7 +74,7 @@ class flipItEnv(Env):
         for agent in agents:
             if agent.strategy == -1: # adaptive strategy : don't flip (0) or flip (1)
                 flipped[agent] = action
-                actionReward = - action * self.flipCost + agent.isCurrentOwner() * self.flipReward
+                actionReward = - (action and agent.isCurrentOwner()) * self.flipCost + (not action and agent.isCurrentOwner()) * self.flipReward
                 self.actions.append(action)
             else:
                 globals.gIteration = self.currStep
@@ -84,7 +84,7 @@ class flipItEnv(Env):
                     agent.lastFlipTime = self.currStep
 
             # update score : if flip, add flip Cost, if current owner, add owner Reward
-            agent.score += - flipped[agent] * self.flipCost + agent.isCurrentOwner() * self.flipReward
+            agent.score += - (action and agent.isCurrentOwner()) * self.flipCost + (not action and agent.isCurrentOwner()) * self.flipReward
 
 
         if globals.gDebug:
