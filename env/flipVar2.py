@@ -47,7 +47,8 @@ class flipItEnv(Env):
         self.currEpisode = -1
         self.actionEpisodeMemory = []
 
-        self.actions = []
+        self.actionsDQN = []
+        self.actionsOPP = []
 
     def step(self, action):
         """
@@ -74,11 +75,12 @@ class flipItEnv(Env):
         for agent in agents:
             if agent.strategy == -1: # adaptive strategy : don't flip (0) or flip (1)
                 flipped[agent] = action
-                self.actions.append(action)
+                self.actionsDQN.append(action)
             else:
                 globals.gIteration = self.currStep
                 agent.flipDecision() # run corresponding strategy
                 flipped[agent] = agent.flip
+                self.actionsOPP.append(int(agent.flip))
                 if agent.flip:
                     agent.lastFlipTime = self.currStep
 
@@ -86,7 +88,7 @@ class flipItEnv(Env):
             if agent.isCurrentOwner():
                 sc += - flipped[agent] * self.flipCost + (flipped[agent] + 1) % 2 * self.flipReward
             else:
-                sc += - (flipped[agent] + 1) % 2 * self.flipCost + flipped[agent] * self.flipReward
+                sc += - ((flipped[agent] + 1) % 2) * self.flipCost + flipped[agent] * self.flipReward
             if agent.strategy == -1:
                 actionReward = sc
 
@@ -126,7 +128,8 @@ class flipItEnv(Env):
             self.done = True
             print('END GAME. Scores : adaptive agent score = {}, non-adaptive agent score = {}'.format(self.agents[0].score, self.agents[1].score))
             if self.currEpisode > 0 and self.currEpisode % 10 == 8:
-                print(self.actions)
+                print(self.actionsDQN)
+                print(self.actionsOPP)
 
         return actionReward
 
@@ -153,7 +156,8 @@ class flipItEnv(Env):
         -------
         observation (object): the initial observation of the space.
         """
-        self.actions = []
+        self.actionsDQN = []
+        self.actionsOPP = []
         self.currStep = -1  # reset step counter
         for agent in self.agents:
             agent.reset()

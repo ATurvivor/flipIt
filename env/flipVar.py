@@ -38,8 +38,10 @@ class flipItEnv(Env):
         self.flipReward = globals.gFlipReward
 
         # reinforcement learning variables (actions, observations)
-        low = np.array([-1.0, -1.0, 0, -self.flipCost * self.steps])
-        high = np.array([self.steps + 1, self.steps + 1, 1, self.steps + 1])
+        low = np.array([-1.0, -1.0, 0])
+        high = np.array([self.steps + 1, self.steps + 1, 1])
+        #low = np.array([-1.0, -1.0, 0, -self.flipCost * self.steps])
+        #high = np.array([self.steps + 1, self.steps + 1, 1, self.steps + 1])
         self.observation_space = spaces.Box(low, high, dtype=np.float32)
         self.action_space = spaces.Discrete(2)  # defines what the agent can do, i.e. actions (flip, don't flip)
 
@@ -129,14 +131,8 @@ class flipItEnv(Env):
         :return:
         """
         opponentFlipTime = self.DQNAgent.knowledge[1 - self.DQNAgent.id]
-        return [opponentFlipTime, self.currStep, self.DQNAgent.isCurrentOwner(), self.DQNAgent.score - self.oppAgent.score]
-
-    def getCurrentOwner(self):
-        """
-
-        :return:
-        """
-        return globals.gCurrentOwner
+        return [opponentFlipTime, self.currStep, self.DQNAgent.isCurrentOwner()]
+        #return [opponentFlipTime, self.currStep, self.DQNAgent.isCurrentOwner(), self.DQNAgent.score - self.oppAgent.score]
 
     def reset(self):
         """
