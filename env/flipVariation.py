@@ -38,8 +38,8 @@ class flipItEnv(Env):
         self.flipReward = globals.gFlipReward
 
         # reinforcement learning variables (actions, observations)
-        low = np.array([-1.0, -1.0, 0, -self.flipCost * self.steps])
-        high = np.array([self.steps + 1, self.steps + 1, 1, self.steps + 1])
+        low = np.array([-1.0, -1.0, 0])
+        high = np.array([self.steps + 1, self.steps + 1, 1])
         self.observation_space = spaces.Box(low, high, dtype=np.float32)
         self.action_space = spaces.Discrete(2)  # defines what the agent can do, i.e. actions (flip, don't flip)
 
@@ -47,8 +47,7 @@ class flipItEnv(Env):
         self.currEpisode = -1
         self.actionEpisodeMemory = []
 
-        self.actionsDQN = []
-        self.actionsOPP = []
+        self.flips = []
 
     def step(self, action):
         """
@@ -62,6 +61,7 @@ class flipItEnv(Env):
         self.currStep += 1
         reward = self._take_action(action)
         ob = self._get_state() # get current state of game
+        #print(action, ob, reward)
         return ob, reward, self.done, {}
 
     def _take_action(self, action):
@@ -75,35 +75,25 @@ class flipItEnv(Env):
         for agent in agents:
             if agent.strategy == -1: # adaptive strategy : don't flip (0) or flip (1)
                 flipped[agent] = action
-                self.actionsDQN.append(action)
+                if action:
+                    self.flips.append(self.currStep)
             else:
                 globals.gIteration = self.currStep
                 agent.flipDecision() # run corresponding strategy
                 flipped[agent] = agent.flip
-                self.actionsOPP.append(int(agent.flip))
                 if agent.flip:
                     agent.lastFlipTime = self.currStep
 
-            sc = 0
-            if agent.isCurrentOwner():
-                sc += - flipped[agent] * self.flipCost + (flipped[agent] + 1) % 2 * self.flipReward
-            else:
-                sc += - ((flipped[agent] + 1) % 2) * self.flipCost + flipped[agent] * self.flipReward
-            if agent.strategy == -1:
-                actionReward = sc
-
             # update score : if flip, add flip Cost, if current owner, add owner Reward
-            agent.score += sc
+            score = - flipped[agent] * self.flipCost
+            if flipped[agent] != agent.isCurrentOwner():
+                score += self.flipReward
+            else:
+                score -= agent.isCurrentOwner() * self.flipReward
 
-
-        if globals.gDebug:
-            print('Current Iteration {}'.format(self.currStep))
-            print('Current owner : ' + str(globals.gCurrentOwner.id))
-            flipsSt = 'Agents flip decisions : {'
-            for ag, dec in flipped.items():
-                flipsSt += 'Agent ' + str(ag.id) + ' : ' + str(dec) + ', '
-            flipsSt = flipsSt[:-2] + '}'
-            print(flipsSt)
+            agent.score += score
+            if agent.strategy == -1:
+                actionReward = score
 
         # if any agent flipped, update game and choose new resource owner
         if any(flipped.values()):
@@ -120,16 +110,12 @@ class flipItEnv(Env):
             # choose new owner at random
             agentOrder = np.random.permutation(flippedAgents)
             agentOrder[-1].setCurrentOwner()
-            if globals.gDebug:
-                print('New owner : ' + str(globals.gCurrentOwner.id))
 
-        # check if end of game
+        # end of game
         if self.currStep >= self.steps:
             self.done = True
-            print('END GAME. Scores : adaptive agent score = {}, non-adaptive agent score = {}'.format(self.agents[0].score, self.agents[1].score))
-            if self.currEpisode > 0 and self.currEpisode % 10 == 8:
-                print(self.actionsDQN)
-                print(self.actionsOPP)
+            print('Episode {} : adaptive agent score = {}, non-adaptive agent score = {}'.format(self.currEpisode, self.agents[0].score, self.agents[1].score))
+            print(self.flips)
 
         return actionReward
 
@@ -139,14 +125,7 @@ class flipItEnv(Env):
         :return:
         """
         opponentFlipTime = self.DQNAgent.knowledge[1 - self.DQNAgent.id]
-        return [opponentFlipTime, self.currStep, self.DQNAgent.isCurrentOwner(), self.DQNAgent.score - self.oppAgent.score]
-
-    def getCurrentOwner(self):
-        """
-
-        :return:
-        """
-        return globals.gCurrentOwner
+        return [opponentFlipTime, self.currStep, self.DQNAgent.isCurrentOwner()]
 
     def reset(self):
         """
@@ -156,15 +135,17 @@ class flipItEnv(Env):
         -------
         observation (object): the initial observation of the space.
         """
-        self.actionsDQN = []
-        self.actionsOPP = []
+        self.flips = []
         self.currStep = -1  # reset step counter
         for agent in self.agents:
             agent.reset()
+
+        self.DQNAgent.setCurrentOwner()
         self.done = False  # reset end of game
         self.actionEpisodeMemory.append([])
 
         self.currEpisode += 1  # increase episode number
+        print('Initial state {}'.format(self._get_state()))
         return self._get_state()  # get current state of game
 
 
@@ -199,7 +180,7 @@ if __name__ == '__main__':
         lr=5e-4,
         total_timesteps=100000,
         buffer_size=50000,
-        batch_size=64,
+        batch_size=32,
         exploration_fraction=0.1,
         exploration_final_eps=0.02,
         print_freq=10,
