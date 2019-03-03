@@ -23,6 +23,7 @@ def resetGame(agents):
     :return:
     """
     globals.gEndGame = True
+    globals.gGameFlips = {idx: [] for idx in range(globals.gNbAgents)}
     if globals.gDebug:
         print('\nResetting game.')
 

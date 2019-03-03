@@ -59,9 +59,11 @@ class flipItEnv(Env):
             raise RuntimeError("End of the Game")
 
         self.currStep += 1
+
         reward = self._take_action(action)
-        ob = self._get_state() # get current state of game
-        #print(action, ob, reward)
+        ob = self._get_state()  # get current state of game
+
+        print(action, ob, reward)
         return ob, reward, self.done, {}
 
     def _take_action(self, action):
@@ -135,6 +137,8 @@ class flipItEnv(Env):
         -------
         observation (object): the initial observation of the space.
         """
+        globals.gGameFlips = {idx: [] for idx in range(globals.gNbAgents)}
+
         self.flips = []
         self.currStep = -1  # reset step counter
         for agent in self.agents:
@@ -145,7 +149,7 @@ class flipItEnv(Env):
         self.actionEpisodeMemory.append([])
 
         self.currEpisode += 1  # increase episode number
-        print('Initial state {}'.format(self._get_state()))
+        # print('Initial state {}'.format(self._get_state()))
         return self._get_state()  # get current state of game
 
 
@@ -178,10 +182,11 @@ if __name__ == '__main__':
         env,
         network='mlp',
         lr=5e-4,
-        total_timesteps=100000,
+        total_timesteps=1000000,
         buffer_size=50000,
-        batch_size=32,
-        exploration_fraction=0.1,
-        exploration_final_eps=0.02,
+        exploration_fraction=0.05,
+        exploration_final_eps=0.002,
+        batch_size=16,
         print_freq=10,
+        gamma=2
     )

@@ -67,10 +67,9 @@ class Agent:
         """
         for idx in range(globals.gNbAgents):
             if self.type == 'LM': # last move
-                try:
-                    if not self.knowledge[idx] or self.knowledge[idx][-1] != globals.gGameFlips[idx][-1]:
+                try: # if opponent did not flip, this would return an error
+                    if not self.knowledge[idx] or self.knowledge[idx] != globals.gGameFlips[idx][-1]:
                         self.knowledge[idx] = globals.gGameFlips[idx][-1] # only knows most recent flip
-
                         # keeps storing known recent moves
                         #self.knowledge[idx].append(globals.gGameFlips[idx][-1])
                 except:
