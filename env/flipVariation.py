@@ -38,9 +38,12 @@ class flipItEnv(Env):
         self.flipReward = globals.gFlipReward
 
         # reinforcement learning variables (actions, observations)
-        low = np.array([-1.0, -1.0, 0])
-        high = np.array([self.steps + 1, self.steps + 1, 1])
-        self.observation_space = spaces.Box(low, high, dtype=np.float32)
+        #low = np.array([0, 0, 0])
+        #high = np.array([self.steps + 1, self.steps + 1, 2])
+        #self.observation_space = spaces.Box(low, high, dtype=np.float32)
+
+        self.observation_space = spaces.Discrete(self.steps + 1) # time since last flip
+        #self.observation_space = spaces.Discrete(2) # owner or not
         self.action_space = spaces.Discrete(2)  # defines what the agent can do, i.e. actions (flip, don't flip)
 
         # store what the agent tried
@@ -61,9 +64,9 @@ class flipItEnv(Env):
         self.currStep += 1
 
         reward = self._take_action(action)
-        ob = self._get_state()  # get current state of game
+        ob = self._get_state(knownOwner=action)  # get current state of game
 
-        print(action, ob, reward)
+        # print(action, ob, reward)
         return ob, reward, self.done, {}
 
     def _take_action(self, action):
@@ -86,13 +89,9 @@ class flipItEnv(Env):
                 if agent.flip:
                     agent.lastFlipTime = self.currStep
 
-            # update score : if flip, add flip Cost, if current owner, add owner Reward
-            score = - flipped[agent] * self.flipCost
-            if flipped[agent] != agent.isCurrentOwner():
-                score += self.flipReward
-            else:
-                score -= agent.isCurrentOwner() * self.flipReward
 
+            # update score : if flip, add flip Cost, if current owner, add owner Reward
+            score = agent.isCurrentOwner() * self.flipReward - flipped[agent] * self.flipCost
             agent.score += score
             if agent.strategy == -1:
                 actionReward = score
@@ -110,8 +109,11 @@ class flipItEnv(Env):
                 agent.updateKnowledge()
 
             # choose new owner at random
-            agentOrder = np.random.permutation(flippedAgents)
-            agentOrder[-1].setCurrentOwner()
+            # agentOrder = np.random.permutation(flippedAgents)
+            # agentOrder[-1].setCurrentOwner()
+
+            # give priority to DQN agent
+            self.DQNAgent.setCurrentOwner()
 
         # end of game
         if self.currStep >= self.steps:
@@ -121,13 +123,18 @@ class flipItEnv(Env):
 
         return actionReward
 
-    def _get_state(self):
+    def _get_state(self, knownOwner):
         """
         Get observation (agent's knowledge, time step)
         :return:
         """
         opponentFlipTime = self.DQNAgent.knowledge[1 - self.DQNAgent.id]
-        return [opponentFlipTime, self.currStep, self.DQNAgent.isCurrentOwner()]
+        if opponentFlipTime:
+            return self.currStep - opponentFlipTime
+        return self.currStep
+
+        # opponentFlipTime = self.DQNAgent.knowledge[1 - self.DQNAgent.id]
+        # return [opponentFlipTime, self.currStep, self.DQNAgent.isCurrentOwner()]
 
     def reset(self):
         """
@@ -149,8 +156,7 @@ class flipItEnv(Env):
         self.actionEpisodeMemory.append([])
 
         self.currEpisode += 1  # increase episode number
-        # print('Initial state {}'.format(self._get_state()))
-        return self._get_state()  # get current state of game
+        return self._get_state(knownOwner=1)  # get current state of game, DQN initial owner of the game
 
 
 def callback(lcl, _glb):
@@ -171,7 +177,7 @@ if __name__ == '__main__':
     # Agents
     DQNAgent = Agent(strategy=-1, type='LM')
     DQNAgent.setCurrentOwner()
-    oppAgent = Agent(strategy=0, strategyParam=0.02)
+    oppAgent = Agent(strategy=0, strategyParam=0.05)
     agents = [DQNAgent, oppAgent]
 
     # Environment
@@ -181,12 +187,13 @@ if __name__ == '__main__':
     act = deepq.learn(
         env,
         network='mlp',
-        lr=5e-4,
-        total_timesteps=1000000,
+        lr=0.001,
+        total_timesteps=100000,
         buffer_size=50000,
-        exploration_fraction=0.05,
+        exploration_fraction=0.1,
         exploration_final_eps=0.002,
-        batch_size=16,
+        batch_size=32,
         print_freq=10,
-        gamma=2
+        gamma=1,
+        prioritized_replay=True,
     )
