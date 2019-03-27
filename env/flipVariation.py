@@ -13,6 +13,7 @@ import numpy as np
 from agents.agent import Agent
 from config.properties import readProperties, setProperties
 from config import globals
+import matplotlib.pyplot as plt
 
 class flipItEnv(Env):
     """
@@ -51,6 +52,7 @@ class flipItEnv(Env):
         self.actionEpisodeMemory = []
 
         self.flips = []
+        self.oppFlips = []
 
     def step(self, action):
         """
@@ -64,9 +66,8 @@ class flipItEnv(Env):
         self.currStep += 1
 
         reward = self._take_action(action)
-        ob = self._get_state(knownOwner=action)  # get current state of game
+        ob = self._get_state()  # get current state of game
 
-        # print(action, ob, reward)
         return ob, reward, self.done, {}
 
     def _take_action(self, action):
@@ -77,7 +78,7 @@ class flipItEnv(Env):
         """
         flipped = {}  # agents that flip or flip times for discrete/continuous respectively
 
-        for agent in agents:
+        for agent in self.agents:
             if agent.strategy == -1: # adaptive strategy : don't flip (0) or flip (1)
                 flipped[agent] = action
                 if action:
@@ -88,6 +89,7 @@ class flipItEnv(Env):
                 flipped[agent] = agent.flip
                 if agent.flip:
                     agent.lastFlipTime = self.currStep
+                    self.oppFlips.append(self.currStep)
 
 
             # update score : if flip, add flip Cost, if current owner, add owner Reward
@@ -112,20 +114,25 @@ class flipItEnv(Env):
             # agentOrder = np.random.permutation(flippedAgents)
             # agentOrder[-1].setCurrentOwner()
 
-            # give priority to DQN agent
-            self.DQNAgent.setCurrentOwner()
+            if len(flippedAgents) == 1:
+                flippedAgents[0].setCurrentOwner()
+            else:
+                # give priority to DQN agent if both flipped
+                self.DQNAgent.setCurrentOwner()
+                # self.oppAgent.setCurrentOwner()
 
         # end of game
         if self.currStep >= self.steps:
             self.done = True
             print('Episode {} : adaptive agent score = {}, non-adaptive agent score = {}'.format(self.currEpisode, self.agents[0].score, self.agents[1].score))
-            print(self.flips)
+            print('Adaptive agent : {}'.format(self.flips))
+            print('Opponent : {}'.format(self.oppFlips))
 
         return actionReward
 
-    def _get_state(self, knownOwner):
+    def _get_state(self):
         """
-        Get observation (agent's knowledge, time step)
+        Get observation (time since last opponent flip)
         :return:
         """
         opponentFlipTime = self.DQNAgent.knowledge[1 - self.DQNAgent.id]
@@ -147,6 +154,7 @@ class flipItEnv(Env):
         globals.gGameFlips = {idx: [] for idx in range(globals.gNbAgents)}
 
         self.flips = []
+        self.oppFlips = []
         self.currStep = -1  # reset step counter
         for agent in self.agents:
             agent.reset()
@@ -156,28 +164,17 @@ class flipItEnv(Env):
         self.actionEpisodeMemory.append([])
 
         self.currEpisode += 1  # increase episode number
-        return self._get_state(knownOwner=1)  # get current state of game, DQN initial owner of the game
+
+        return self._get_state()  # get current state of game
 
 
-def callback(lcl, _glb):
-    """
-
-    :param lcl:
-    :param _glb:
-    :return:
-    """
-    # stop training if reward exceeds 199
-    is_solved = lcl['t'] > 100 and sum(lcl['episode_rewards'][-101:-1]) / 100 >= 0
-    return is_solved
-
-
-if __name__ == '__main__':
+def train():
     setProperties(readProperties('../config/parameters/dqn.properties'))
 
     # Agents
     DQNAgent = Agent(strategy=-1, type='LM')
     DQNAgent.setCurrentOwner()
-    oppAgent = Agent(strategy=0, strategyParam=0.05)
+    oppAgent = Agent(strategy=3, strategyParam=0.05)
     agents = [DQNAgent, oppAgent]
 
     # Environment
@@ -189,7 +186,7 @@ if __name__ == '__main__':
         network='mlp',
         lr=0.001,
         total_timesteps=100000,
-        buffer_size=50000,
+        buffer_size=5000,
         exploration_fraction=0.1,
         exploration_final_eps=0.002,
         batch_size=32,
@@ -197,3 +194,11 @@ if __name__ == '__main__':
         gamma=1,
         prioritized_replay=True,
     )
+
+    # Save model
+    print('Saving model to flipIt_model.pkl')
+    act.save('env/models/flipIt_model.pkl')
+
+
+if __name__ == '__main__':
+    train()

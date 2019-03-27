@@ -17,6 +17,20 @@ def periodic(agent, continuous):
     else:
         agent.flip = False
 
+def periodic_with_random_phase(agent, continuous):
+    """
+
+    :param agent:
+    :param continuous:
+    :return:
+    """
+    per = 1.0 / agent.strategyParam
+    if globals.gIteration > per:
+        periodic(agent, continuous)
+    elif np.random.random() < 0.5: # random phase
+        agent.flip = False
+    else:
+        agent.flip = True
 
 def exponential(agent, continuous):
     """
@@ -29,14 +43,14 @@ def exponential(agent, continuous):
 
     if continuous:
         agent.flipTime = np.random.exponential(scale=1.0/p)
-    elif np.random.geometric(p) == 1:
+    elif np.random.random() < p:
         agent.flip = True
     else:
         agent.flip = False
 
 def delayedExponential(agent, continuous):
     """
-
+    Delayed exponential memoryless strategy
     :param agent:
     :param continuous:
     :return:
@@ -46,7 +60,7 @@ def delayedExponential(agent, continuous):
 
     if continuous:
         agent.flipTime = delay + np.random.exponential(scale=1.0/p)
-    elif np.random.geometric(p) == 1 and globals.gIteration - agent.lastFlipTime >= delay:
+    elif np.random.random() < p and globals.gIteration - agent.lastFlipTime >= delay:
         agent.flip = True
     else:
         agent.flip = False

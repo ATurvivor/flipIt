@@ -33,7 +33,7 @@ class Agent:
         :param continuous: continuous or discrete
         :return:
         """
-        strategies = {0 : periodic, 1 : uniform, 2 : delayedUniform, 3 : exponential, 4 : delayedExponential, 'idle' : idle}
+        strategies = {0 : periodic, 1 : uniform, 2 : delayedUniform, 3 : exponential, 4 : delayedExponential, 5 : idle}
         if globals.gEnvironment:
             return strategies[self.strategy.get()](self, continuous)
         return strategies[self.strategy](self, continuous)
