@@ -11,8 +11,8 @@ BUFFER_SIZE = 2000
 BATCH_SIZE = 32
 GAMMA = 1               # discount factor
 TAU = 1e-3              # for soft update of target parameters
-LR = 5e-4               # learning rate
-UPDATE_EVERY = 10       # how often to update the network
+LR = 1e-3               # learning rate
+UPDATE_EVERY = 5        # how often to update the network
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -46,12 +46,11 @@ class dqnAgent(Agent):
                 self.learn(experiences, GAMMA)
 
     def act(self, state, eps=0.):
-        """Returns actions for given state as per current policy.
-
-        Params
-        ======
-            state (array_like): current state
-            eps (float): epsilon, for epsilon-greedy action selection
+        """
+        Returns actions for given state as per current policy.
+        :param state: current state
+        :param eps: current epsilon value
+        :return:
         """
         state = torch.from_numpy(state).float().unsqueeze(0).to(device)
         self.dqn_local.eval()
@@ -59,47 +58,47 @@ class dqnAgent(Agent):
             action_values = self.dqn_local(state)
         self.dqn_local.train()
 
-        # Epsilon-greedy action selection
+        # epsilon-greedy action selection
         if random.random() > eps:
             return np.argmax(action_values.cpu().data.numpy())
         else:
             return random.choice(np.arange(self.action_size))
 
     def learn(self, experiences, gamma):
-        """Update value parameters using given batch of experience tuples.
-        Params
-        ======
-            experiences (Tuple[torch.Tensor]): tuple of (s, a, r, s', done) tuples
-            gamma (float): discount factor
+        """
+        Update value parameters using given batch of experience tuples.
+        :param experiences: n-tuple
+        :param gamma: discount factor
+        :return:
         """
         states, actions, rewards, next_states, dones = experiences
 
-        # Get max predicted Q values (for next states) from target model
+        # get max predicted Q values (for next states) from target model
         Q_targets_next = self.dqn_target(next_states).detach().max(1)[0].unsqueeze(1)
         # Compute Q targets for current states
         Q_targets = rewards + (gamma * Q_targets_next * (1 - dones))
 
-        # Get expected Q values from local model
+        # get expected Q values from local model
         Q_expected = self.dqn_local(states).gather(1, actions)
 
-        # Compute loss
+        # compute loss
         loss = F.mse_loss(Q_expected, Q_targets)
-        # Minimize the loss
+
+        # minimize the loss
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
 
-        # ------------------- update target network ------------------- #
+        # update target network
         self.soft_update(self.dqn_local, self.dqn_target, TAU)
 
     def soft_update(self, local_model, target_model, tau):
-        """Soft update model parameters.
-        θ_target = τ*θ_local + (1 - τ)*θ_target
-        Params
-        ======
-            local_model (PyTorch model): weights will be copied from
-            target_model (PyTorch model): weights will be copied to
-            tau (float): interpolation parameter
+        """
+        Sofr update model parameters.
+        :param local_model: weights will be copied from
+        :param target_model: weights will be copied to
+        :param tau: interpolation parameter
+        :return:
         """
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(tau * local_param.data + (1.0 - tau) * target_param.data)

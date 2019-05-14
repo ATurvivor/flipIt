@@ -11,6 +11,7 @@ class DQN(nn.Module):
         :param seed:
         :param fc1_units: number of nodes in first hidden layer
         :param fc2_units: number of nodes in second hidden layer
+        :param fc3_units: number of nodes in third hidden layer
         """
         super(DQN, self).__init__()
         self.seed = torch.manual_seed(seed)

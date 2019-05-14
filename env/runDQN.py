@@ -132,15 +132,17 @@ class flipIt(Env):
         Get observation
         :return:
         """
-        # opponentFlipTime = self.dqn.knowledge[1 - self.dqn.id]
-        # if opponentFlipTime:
-        #     if self.dqn.lastFlipTime:
-        #         return np.array([self.currStep - opponentFlipTime, self.currStep - self.dqn.lastFlipTime])
-        #     else:
-        #         return np.array([self.currStep - opponentFlipTime, self.currStep])
-        # return np.array([self.currStep, self.dqn.lastFlipTime])
+        if self.opp.strategy == 0: # periodic
+            opponentFlipTime = self.dqn.knowledge[1 - self.dqn.id]
+            if opponentFlipTime:
+                if self.dqn.lastFlipTime:
+                    return np.array([self.currStep - opponentFlipTime, self.currStep - self.dqn.lastFlipTime])
+                else:
+                    return np.array([self.currStep - opponentFlipTime, self.currStep])
+            return np.array([self.currStep, self.dqn.lastFlipTime])
 
-        return np.array([self.dqn.lastFlipTime, self.steps - self.currStep])
+        elif self.opp.strategy == 3: # exponential
+            return np.array([self.dqn.lastFlipTime, self.steps - self.currStep])
 
         # opponentFlipTime = self.dqn.knowledge[1 - self.dqn.id]
         # return [opponentFlipTime, self.currStep, self.dqn.isCurrentOwner()]
@@ -181,7 +183,7 @@ class flipIt(Env):
         eps = eps_start
         ep = -1
 
-        while ep < 200:
+        while ep < 10:
         #while not scores_window or np.mean(scores_window) < 78.0:
             ep += 1
             state = self.reset()
@@ -201,10 +203,11 @@ class flipIt(Env):
                 av_scores.append(np.mean(scores_window))
                 oppAv_socres.append(np.mean(opp_scores[-100:]))
                 print('\rEpisode {}\tAverage Score: {:.2f}'.format(ep, np.mean(scores_window)))
-                #print('Adaptive agent score = {}, non-adaptive agent score = {}'.format(self.dqn.score, self.opp.score))
-                #print('Adaptive agent : {}'.format(self.flips))
-                #print('Opponent : {}\n'.format(self.oppFlips))
-            if ep != 0 and ep % 200 == 0: break
+
+                print('Adaptive agent score = {}, non-adaptive agent score = {}'.format(self.dqn.score, self.opp.score))
+                print('Adaptive agent : {}'.format(self.flips))
+                print('Opponent : {}\n'.format(self.oppFlips))
+
         print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(ep - 100, np.mean(scores_window)))
         torch.save(self.dqn.dqn_local.state_dict(), 'results/checkpoint.pth')
         return scores, av_scores, opp_scores, oppAv_socres
@@ -227,11 +230,13 @@ if __name__ == '__main__':
 
     # plot scores
     fig = plt.figure(num=None, figsize=(12, 8), dpi=180, facecolor='w', edgecolor='k')
-    ax = fig.add_subplot(111)
-    plt.plot(np.arange(len(scores)), scores, color='#c1d1e0')
-    plt.plot(np.arange(len(av_scores))*100, av_scores, color='#7093b7')
-    plt.plot(np.arange(len(opp_scores)), opp_scores, color='#f998a5')
-    plt.plot(np.arange(len(oppAv_socres))*100, oppAv_socres, color='#ff0000')
+    plt.plot(np.arange(len(scores)), scores, color='#c1d1e0', linewidth=0.5, alpha=0.6)
+    plt.plot(np.arange(len(av_scores))*100, av_scores, color='#7093b7', label='DQN Agent')
+    plt.plot(np.arange(len(opp_scores)), opp_scores, color='#f998a5', linewidth=0.5, alpha=0.6)
+    plt.plot(np.arange(len(oppAv_socres))*100, oppAv_socres, color='#ff0000', label='Opponent')
+    plt.ylim(top=200)
     plt.ylabel('Score')
     plt.xlabel('Episode #')
+    plt.legend(loc='best')
+    plt.title('Game length = {}, flip cost = {}, flip reward = {}\n'.format(globals.gGameLength, globals.gFlipCost, globals.gFlipReward))
     plt.savefig(fname)
