@@ -1,52 +1,55 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # path
 import sys
 from os import getcwd
+
 sys.path.append(getcwd())
 
-from gym import Env, spaces
-from baselines import deepq
+
 import numpy as np
+from gym import Env, spaces
 
 from agents.agent import Agent
+from older_versions.dqnAgent import dqnAgent
+
 from config.properties import readProperties, setProperties
 from config import globals
-import matplotlib.pyplot as plt
+
+EPISODES = 600
+BATCH_SIZE = 32
 
 class flipItEnv(Env):
     """
     Define flipIt Environment
     """
-
-    def __init__(self, agents):
+    def __init__(self):
         self.__version__ = "0.1.0"
         print("FlipIt Environment Version {}".format(self.__version__))
 
-        # environment agents
-        self.agents = agents
-        self.DQNAgent = agents[0] # adaptive agent
-        if self.DQNAgent.strategy != -1: # check if non-adaptive
-            raise Exception('Agent 0 should be an adaptive agent (strategy -1).')
-        self.oppAgent = agents[1]
-
-        # set  general variables defining the environment
+        # set general variables defining the environment
         self.done = False
         self.currStep = -1
         self.steps = globals.gGameLength
         self.flipCost = globals.gFlipCost
         self.flipReward = globals.gFlipReward
 
-        # reinforcement learning variables (actions, observations)
-        #low = np.array([0, 0, 0])
-        #high = np.array([self.steps + 1, self.steps + 1, 2])
-        #self.observation_space = spaces.Box(low, high, dtype=np.float32)
-
-        self.observation_space = spaces.Discrete(self.steps + 1) # time since last flip
-        #self.observation_space = spaces.Discrete(2) # owner or not
+        # obs/action space
+        low = np.array([0, 0])
+        high = np.array([self.steps + 1, self.steps + 1])
+        self.observation_space = spaces.Box(low, high, dtype=np.int32)
         self.action_space = spaces.Discrete(2)  # defines what the agent can do, i.e. actions (flip, don't flip)
 
+        self.state_size = self.observation_space.shape[0]
+        self.action_size = self.action_space.n
+
+        # agents
+        self.dqn = dqnAgent(action_size=self.action_size, state_size=self.state_size) # adaptive agent
+        if self.dqn.strategy != -1:  # check if non-adaptive
+            raise Exception('Agent 0 should be an adaptive agent (strategy -1).')
+        self.dqn.setCurrentOwner()  # initial owner
+        self.opp = Agent(strategy=0, strategyParam=0.05)
+
+        self.agents = [self.dqn, self.opp]
+        
         # store what the agent tried
         self.currEpisode = -1
         self.actionEpisodeMemory = []
@@ -82,6 +85,7 @@ class flipItEnv(Env):
             if agent.strategy == -1: # adaptive strategy : don't flip (0) or flip (1)
                 flipped[agent] = action
                 if action:
+                    agent.lastFlipTime = self.currStep
                     self.flips.append(self.currStep)
             else:
                 globals.gIteration = self.currStep
@@ -118,7 +122,7 @@ class flipItEnv(Env):
                 flippedAgents[0].setCurrentOwner()
             else:
                 # give priority to DQN agent if both flipped
-                self.DQNAgent.setCurrentOwner()
+                self.dqn.setCurrentOwner()
                 # self.oppAgent.setCurrentOwner()
 
         # end of game
@@ -135,13 +139,18 @@ class flipItEnv(Env):
         Get observation (time since last opponent flip)
         :return:
         """
-        opponentFlipTime = self.DQNAgent.knowledge[1 - self.DQNAgent.id]
-        if opponentFlipTime:
-            return self.currStep - opponentFlipTime
-        return self.currStep
+        # opponentFlipTime = self.dqn.knowledge[1 - self.dqn.id]
+        # if opponentFlipTime:
+        #     if self.dqn.lastFlipTime:
+        #         return [self.currStep - opponentFlipTime, self.currStep - self.dqn.lastFlipTime]
+        #     else:
+        #         return [self.currStep - opponentFlipTime, self.currStep]
+        # return [self.currStep, self.dqn.lastFlipTime]
 
-        # opponentFlipTime = self.DQNAgent.knowledge[1 - self.DQNAgent.id]
-        # return [opponentFlipTime, self.currStep, self.DQNAgent.isCurrentOwner()]
+        return [self.dqn.lastFlipTime, self.steps - self.currStep]
+
+        # opponentFlipTime = self.dqn.knowledge[1 - self.dqn.id]
+        # return [opponentFlipTime, self.currStep, self.dqn.isCurrentOwner()]
 
     def reset(self):
         """
@@ -159,7 +168,7 @@ class flipItEnv(Env):
         for agent in self.agents:
             agent.reset()
 
-        self.DQNAgent.setCurrentOwner()
+        self.dqn.setCurrentOwner()
         self.done = False  # reset end of game
         self.actionEpisodeMemory.append([])
 
@@ -167,38 +176,24 @@ class flipItEnv(Env):
 
         return self._get_state()  # get current state of game
 
-
-def train():
-    setProperties(readProperties('../config/parameters/dqn.properties'))
-
-    # Agents
-    DQNAgent = Agent(strategy=-1, type='LM')
-    DQNAgent.setCurrentOwner()
-    oppAgent = Agent(strategy=3, strategyParam=0.05)
-    agents = [DQNAgent, oppAgent]
-
-    # Environment
-    env = flipItEnv(agents)
-
-    # Training
-    act = deepq.learn(
-        env,
-        network='mlp',
-        lr=0.001,
-        total_timesteps=100000,
-        buffer_size=5000,
-        exploration_fraction=0.1,
-        exploration_final_eps=0.002,
-        batch_size=32,
-        print_freq=10,
-        gamma=1,
-        prioritized_replay=True,
-    )
-
-    # Save model
-    print('Saving model to flipIt_model.pkl')
-    act.save('env/models/flipIt_model.pkl')
-
+    def learn(self):
+        for e in range(EPISODES):
+            state = self.reset()
+            state = np.reshape(state, [1, self.state_size])
+            for time in range(globals.gGameLength + 1):
+                # env.render()
+                action = self.dqn.act(state)
+                next_state, reward, done, _ = env.step(action)
+                next_state = np.reshape(next_state, [1, self.state_size])
+                self.dqn.remember(state, action, reward, next_state, done)
+                state = next_state
+                if done:
+                    break
+                if len(self.dqn.memory) > BATCH_SIZE:
+                    self.dqn.replay(BATCH_SIZE)
 
 if __name__ == '__main__':
-    train()
+    setProperties(readProperties('../config/parameters/dqn.properties'))
+
+    env = flipItEnv()
+    env.learn()

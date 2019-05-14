@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from endGame import *
-from config.log import initLogFileName, writeLog
+from config.log import initLog, writeLog
 
 import numpy as np
 
@@ -12,7 +12,7 @@ def initParameters(agents):
     :param environment:
     :return:
     """
-    globals.gLogFileName = initLogFileName() # initialise log file name
+    globals.gLogFileName = initLog() # initialise log file name
     globals.gAgentStartId = 0
     globals.gEndGame = False
     globals.gCurrentOwner = agents[globals.gCurrentOwnerId]

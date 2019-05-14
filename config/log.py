@@ -4,7 +4,7 @@ from datetime import datetime
 
 # TODO : complete log
 
-def initLogFileName():
+def initLog():
     """
     Initialise log file name
     :return:
@@ -39,6 +39,3 @@ def writeLog(fileName, it, agents):
     f.write(log + '\n')
 
     f.close()
-
-if __name__ == '__main__':
-    writeLog()

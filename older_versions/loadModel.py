@@ -1,5 +1,5 @@
 from baselines import deepq
-from env.flipVariation import flipItEnv
+from older_versions import flipItEnv
 from agents.agent import *
 from config.properties import setProperties, readProperties
 

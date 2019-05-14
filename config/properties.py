@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from config import globals
+from config.log import initLog
 
 
 def readProperties(propertiesFile):
@@ -31,6 +32,8 @@ def setProperties(properties):
     """
     # Data log
     globals.gLogFileName = eval(properties['gLogFileName'])
+    if not globals.gLogFileName:
+        globals.gLogFileName = initLog()
     globals.gLogData = eval(properties['gLogData'])
 
     globals.gDebug = eval(properties['gDebug'])

@@ -4,11 +4,11 @@ from tkinter import *
 
 
 from endGame import *
-from config.log import initLogFileName, writeLog
+from config.log import initLog, writeLog
 
 import numpy as np
 
-varInteractive = 5
+varInteractive = 6
 
 class controlButtons(Frame):
     def __init__(self, main, master, agents):
@@ -56,7 +56,7 @@ class controlButtons(Frame):
 
         :return:
         """
-        globals.gLogFileName = initLogFileName() # initialise log file name
+        globals.gLogFileName = initLog() # initialise log file name
         globals.gIteration = 0.0 # start iteration count
         globals.gEndGame = False
         globals.gCurrentOwner = self.agents[globals.gCurrentOwnerId]
