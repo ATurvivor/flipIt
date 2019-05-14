@@ -212,7 +212,6 @@ class flipIt(Env):
 
 if __name__ == '__main__':
     setProperties(readProperties('../config/parameters/dqn.properties'))
-    print(globals.gLogFileName)
     env = flipIt()
     print('State shape: ', env.state_size)
     print('Number of actions: ', env.action_size)
