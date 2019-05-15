@@ -144,9 +144,6 @@ class flipIt(Env):
         elif self.opp.strategy == 3: # exponential
             return np.array([self.dqn.lastFlipTime, self.steps - self.currStep])
 
-        # opponentFlipTime = self.dqn.knowledge[1 - self.dqn.id]
-        # return [opponentFlipTime, self.currStep, self.dqn.isCurrentOwner()]
-
     def reset(self):
         """
         Reset the state of the environment and returns an initial observation.
@@ -183,7 +180,7 @@ class flipIt(Env):
         eps = eps_start
         ep = -1
 
-        while ep < 10:
+        while ep < 5000:
         #while not scores_window or np.mean(scores_window) < 78.0:
             ep += 1
             state = self.reset()
