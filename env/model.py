@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class DQN(nn.Module):
-    def __init__(self, state_size, action_size, seed, fc1_units=512, fc2_units=512, fc3_units=512):
+    def __init__(self, state_size, action_size, seed, fc1_units=64, fc2_units=64, fc3_units=64):
         """
 
         :param state_size:
