@@ -205,7 +205,7 @@ class flipIt(Env):
                 print('Adaptive agent : {}'.format(self.flips))
                 print('Opponent : {}\n'.format(self.oppFlips))
 
-        print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(ep - 100, np.mean(scores_window)))
+        print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}\tEpsilon: {}'.format(ep - 100, np.mean(scores_window), eps))
         torch.save(self.dqn.dqn_local.state_dict(), 'results/checkpoint.pth')
         return scores, av_scores, opp_scores, oppAv_socres
 
