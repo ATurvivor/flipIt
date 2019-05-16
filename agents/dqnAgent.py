@@ -7,12 +7,12 @@ from collections import deque, namedtuple
 from env.model import DQN
 from agents.agent import Agent
 
-BUFFER_SIZE = 5000
-BATCH_SIZE = 16
+BUFFER_SIZE = 2000
+BATCH_SIZE = 32
 GAMMA = 1            # discount factor
 TAU = 1e-3              # for soft update of target parameters
-LR = 1e-4               # learning rate
-UPDATE_EVERY = 10        # how often to update the network
+LR = 1e-3               # learning rate
+UPDATE_EVERY = 5        # how often to update the network
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 

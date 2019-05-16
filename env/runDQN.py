@@ -136,10 +136,10 @@ class flipIt(Env):
             opponentFlipTime = self.dqn.knowledge[1 - self.dqn.id]
             if opponentFlipTime:
                 if self.dqn.lastFlipTime:
-                    return np.array([self.currStep - opponentFlipTime, self.currStep - self.dqn.lastFlipTime])
+                    return np.array([self.currStep - self.dqn.lastFlipTime, self.currStep - opponentFlipTime])
                 else:
-                    return np.array([self.currStep - opponentFlipTime, self.currStep])
-            return np.array([self.currStep, self.dqn.lastFlipTime])
+                    return np.array([self.currStep, self.currStep - opponentFlipTime])
+            return np.array([self.currStep, self.currStep])
 
         elif self.opp.strategy == 3: # exponential
             return np.array([self.dqn.lastFlipTime, self.steps - self.currStep])
@@ -163,7 +163,7 @@ class flipIt(Env):
 
         return self._get_state()  # get current state of game
 
-    def train(self, eps_start=1.0, eps_end=0.01, eps_decay=0.995):
+    def train(self, eps_start=1, eps_end=0.01, eps_decay=0.995):
         """
 
         :param n_episodes:
@@ -199,7 +199,7 @@ class flipIt(Env):
             if ep % 100 == 0:
                 av_scores.append(np.mean(scores_window))
                 oppAv_socres.append(np.mean(opp_scores[-100:]))
-                print('\rEpisode {}\tAverage Score: {:.2f}'.format(ep, np.mean(scores_window)))
+                print('\rEpisode {}\tAverage Score: {:.2f}\tEpsilon: {}'.format(ep, np.mean(scores_window), eps))
 
                 print('Adaptive agent score = {}, non-adaptive agent score = {}'.format(self.dqn.score, self.opp.score))
                 print('Adaptive agent : {}'.format(self.flips))
