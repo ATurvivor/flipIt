@@ -210,7 +210,7 @@ class flipIts(Env):
             
             eps = max(eps_end, eps_decay*eps)
             
-            if ep % 500 == 0:
+            if ep % 100 == 0:
                 print('\rEpisode {}\tEpsilon: {}'.format(ep, eps))
                 for agent in self.agents:
                     av_scores[agent.id].append(np.mean(scores[agent.id][-100:]))
